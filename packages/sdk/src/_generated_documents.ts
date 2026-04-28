@@ -923,6 +923,23 @@ export enum AiConversationEntityListWidgetArgsEntitiesType {
   WorkflowDefinition = "WorkflowDefinition",
 }
 
+/** An event part in an AI conversation. */
+export type AiConversationEventPart = AiConversationBasePart & {
+  __typename?: "AiConversationEventPart";
+  /** The Markdown body of the event part. */
+  body: Scalars["String"];
+  /** The data of the event part. */
+  bodyData: Scalars["JSONObject"];
+  /** The ID of the part. */
+  id: Scalars["String"];
+  /** The metadata of the part. */
+  metadata: AiConversationPartMetadata;
+  /** The ID of the subscription to resolve when this event is delivered. */
+  subscriptionId?: Maybe<Scalars["String"]>;
+  /** The type of the part. */
+  type: AiConversationPartType;
+};
+
 export type AiConversationGetMicrosoftTeamsConversationHistoryToolCall = AiConversationBaseToolCall & {
   __typename?: "AiConversationGetMicrosoftTeamsConversationHistoryToolCall";
   displayInfo: AiConversationToolDisplayInfo;
@@ -932,6 +949,26 @@ export type AiConversationGetMicrosoftTeamsConversationHistoryToolCall = AiConve
   rawArgs?: Maybe<Scalars["JSON"]>;
   /** The result of the tool call. */
   rawResult?: Maybe<Scalars["JSON"]>;
+};
+
+export type AiConversationGetPullRequestCheckLogsToolCall = AiConversationBaseToolCall & {
+  __typename?: "AiConversationGetPullRequestCheckLogsToolCall";
+  /** The arguments to the tool call. */
+  args?: Maybe<AiConversationGetPullRequestCheckLogsToolCallArgs>;
+  displayInfo: AiConversationToolDisplayInfo;
+  /** The name of the tool that was called. */
+  name: AiConversationTool;
+  /** The arguments of the tool call. */
+  rawArgs?: Maybe<Scalars["JSON"]>;
+  /** The result of the tool call. */
+  rawResult?: Maybe<Scalars["JSON"]>;
+};
+
+export type AiConversationGetPullRequestCheckLogsToolCallArgs = {
+  __typename?: "AiConversationGetPullRequestCheckLogsToolCallArgs";
+  checkName: Scalars["String"];
+  entity: AiConversationSearchEntitiesToolCallResultEntities;
+  workflowName?: Maybe<Scalars["String"]>;
 };
 
 export type AiConversationGetPullRequestDiffToolCall = AiConversationBaseToolCall & {
@@ -1061,18 +1098,23 @@ export type AiConversationNavigateToPageToolCall = AiConversationBaseToolCall & 
 
 export type AiConversationNavigateToPageToolCallArgs = {
   __typename?: "AiConversationNavigateToPageToolCallArgs";
-  entityType?: Maybe<Scalars["String"]>;
-  identifier?: Maybe<Scalars["String"]>;
+  entities: Array<AiConversationNavigateToPageToolCallArgsEntities>;
+};
+
+export type AiConversationNavigateToPageToolCallArgsEntities = {
+  __typename?: "AiConversationNavigateToPageToolCallArgsEntities";
+  entityType: Scalars["String"];
+  uuid: Scalars["String"];
 };
 
 export type AiConversationNavigateToPageToolCallResult = {
   __typename?: "AiConversationNavigateToPageToolCallResult";
-  newTab?: Maybe<Scalars["Boolean"]>;
-  url: Scalars["String"];
+  urls: Array<Scalars["String"]>;
 };
 
 /** A part in an AI conversation. */
 export type AiConversationPart =
+  | AiConversationEventPart
   | AiConversationPromptPart
   | AiConversationReasoningPart
   | AiConversationTextPart
@@ -1104,6 +1146,7 @@ export enum AiConversationPartPhase {
 
 /** The type of a part in an AI conversation. */
 export enum AiConversationPartType {
+  Event = "event",
   Prompt = "prompt",
   Reasoning = "reasoning",
   Text = "text",
@@ -1283,6 +1326,26 @@ export type AiConversationRetrieveEntitiesToolCallArgs = {
   entities: Array<AiConversationSearchEntitiesToolCallResultEntities>;
 };
 
+export type AiConversationRetryPullRequestCheckToolCall = AiConversationBaseToolCall & {
+  __typename?: "AiConversationRetryPullRequestCheckToolCall";
+  /** The arguments to the tool call. */
+  args?: Maybe<AiConversationRetryPullRequestCheckToolCallArgs>;
+  displayInfo: AiConversationToolDisplayInfo;
+  /** The name of the tool that was called. */
+  name: AiConversationTool;
+  /** The arguments of the tool call. */
+  rawArgs?: Maybe<Scalars["JSON"]>;
+  /** The result of the tool call. */
+  rawResult?: Maybe<Scalars["JSON"]>;
+};
+
+export type AiConversationRetryPullRequestCheckToolCallArgs = {
+  __typename?: "AiConversationRetryPullRequestCheckToolCallArgs";
+  checkName: Scalars["String"];
+  entity: AiConversationSearchEntitiesToolCallResultEntities;
+  workflowName?: Maybe<Scalars["String"]>;
+};
+
 export type AiConversationSearchDocumentationToolCall = AiConversationBaseToolCall & {
   __typename?: "AiConversationSearchDocumentationToolCall";
   displayInfo: AiConversationToolDisplayInfo;
@@ -1333,6 +1396,39 @@ export enum AiConversationStatus {
   Complete = "complete",
   Error = "error",
   Pending = "pending",
+  Waiting = "waiting",
+}
+
+export type AiConversationSubscribeToEventToolCall = AiConversationBaseToolCall & {
+  __typename?: "AiConversationSubscribeToEventToolCall";
+  /** The arguments to the tool call. */
+  args?: Maybe<AiConversationSubscribeToEventToolCallArgs>;
+  displayInfo: AiConversationToolDisplayInfo;
+  /** The name of the tool that was called. */
+  name: AiConversationTool;
+  /** The arguments of the tool call. */
+  rawArgs?: Maybe<Scalars["JSON"]>;
+  /** The result of the tool call. */
+  rawResult?: Maybe<Scalars["JSON"]>;
+};
+
+export type AiConversationSubscribeToEventToolCallArgs = {
+  __typename?: "AiConversationSubscribeToEventToolCallArgs";
+  endsAt?: Maybe<Scalars["String"]>;
+  kind?: Maybe<AiConversationSubscribeToEventToolCallArgsKind>;
+  message?: Maybe<Scalars["String"]>;
+  subscriptionId?: Maybe<Scalars["String"]>;
+  type: AiConversationSubscribeToEventToolCallArgsType;
+};
+
+export enum AiConversationSubscribeToEventToolCallArgsKind {
+  Timer = "timer",
+  Trigger = "trigger",
+}
+
+export enum AiConversationSubscribeToEventToolCallArgsType {
+  Once = "once",
+  Recurring = "recurring",
 }
 
 export type AiConversationSuggestValuesToolCall = AiConversationBaseToolCall & {
@@ -1375,6 +1471,7 @@ export enum AiConversationTool {
   CreateEntity = "CreateEntity",
   DeleteEntity = "DeleteEntity",
   GetMicrosoftTeamsConversationHistory = "GetMicrosoftTeamsConversationHistory",
+  GetPullRequestCheckLogs = "GetPullRequestCheckLogs",
   GetPullRequestDiff = "GetPullRequestDiff",
   GetPullRequestFile = "GetPullRequestFile",
   GetSlackConversationHistory = "GetSlackConversationHistory",
@@ -1387,11 +1484,14 @@ export enum AiConversationTool {
   Research = "Research",
   RestoreEntity = "RestoreEntity",
   RetrieveEntities = "RetrieveEntities",
+  RetryPullRequestCheck = "RetryPullRequestCheck",
   SearchDocumentation = "SearchDocumentation",
   SearchEntities = "SearchEntities",
+  SubscribeToEvent = "SubscribeToEvent",
   SuggestValues = "SuggestValues",
   TranscribeMedia = "TranscribeMedia",
   TranscribeVideo = "TranscribeVideo",
+  UnsubscribeFromEvent = "UnsubscribeFromEvent",
   UpdateEntity = "UpdateEntity",
   WebSearch = "WebSearch",
 }
@@ -1402,6 +1502,7 @@ export type AiConversationToolCall =
   | AiConversationCreateEntityToolCall
   | AiConversationDeleteEntityToolCall
   | AiConversationGetMicrosoftTeamsConversationHistoryToolCall
+  | AiConversationGetPullRequestCheckLogsToolCall
   | AiConversationGetPullRequestDiffToolCall
   | AiConversationGetPullRequestFileToolCall
   | AiConversationGetSlackConversationHistoryToolCall
@@ -1414,11 +1515,14 @@ export type AiConversationToolCall =
   | AiConversationResearchToolCall
   | AiConversationRestoreEntityToolCall
   | AiConversationRetrieveEntitiesToolCall
+  | AiConversationRetryPullRequestCheckToolCall
   | AiConversationSearchDocumentationToolCall
   | AiConversationSearchEntitiesToolCall
+  | AiConversationSubscribeToEventToolCall
   | AiConversationSuggestValuesToolCall
   | AiConversationTranscribeMediaToolCall
   | AiConversationTranscribeVideoToolCall
+  | AiConversationUnsubscribeFromEventToolCall
   | AiConversationUpdateEntityToolCall
   | AiConversationWebSearchToolCall;
 
@@ -1464,6 +1568,25 @@ export type AiConversationTranscribeVideoToolCall = AiConversationBaseToolCall &
   rawArgs?: Maybe<Scalars["JSON"]>;
   /** The result of the tool call. */
   rawResult?: Maybe<Scalars["JSON"]>;
+};
+
+export type AiConversationUnsubscribeFromEventToolCall = AiConversationBaseToolCall & {
+  __typename?: "AiConversationUnsubscribeFromEventToolCall";
+  /** The arguments to the tool call. */
+  args?: Maybe<AiConversationUnsubscribeFromEventToolCallArgs>;
+  displayInfo: AiConversationToolDisplayInfo;
+  /** The name of the tool that was called. */
+  name: AiConversationTool;
+  /** The arguments of the tool call. */
+  rawArgs?: Maybe<Scalars["JSON"]>;
+  /** The result of the tool call. */
+  rawResult?: Maybe<Scalars["JSON"]>;
+};
+
+export type AiConversationUnsubscribeFromEventToolCallArgs = {
+  __typename?: "AiConversationUnsubscribeFromEventToolCallArgs";
+  message?: Maybe<Scalars["String"]>;
+  subscriptionId: Scalars["String"];
 };
 
 export type AiConversationUpdateEntityToolCall = AiConversationBaseToolCall & {
@@ -6197,13 +6320,13 @@ export type FrontAttachmentPayload = {
 };
 
 export type FrontSettingsInput = {
-  /** Whether a ticket should be automatically reopened when its linked Linear issue is cancelled. */
+  /** Whether a ticket should be automatically reopened when its linked Linear issue is canceled. */
   automateTicketReopeningOnCancellation?: InputMaybe<Scalars["Boolean"]>;
   /** Whether a ticket should be automatically reopened when a comment is posted on its linked Linear issue */
   automateTicketReopeningOnComment?: InputMaybe<Scalars["Boolean"]>;
   /** Whether a ticket should be automatically reopened when its linked Linear issue is completed. */
   automateTicketReopeningOnCompletion?: InputMaybe<Scalars["Boolean"]>;
-  /** Whether a ticket should be automatically reopened when its linked Linear project is cancelled. */
+  /** Whether a ticket should be automatically reopened when its linked Linear project is canceled. */
   automateTicketReopeningOnProjectCancellation?: InputMaybe<Scalars["Boolean"]>;
   /** Whether a ticket should be automatically reopened when its linked Linear project is completed. */
   automateTicketReopeningOnProjectCompletion?: InputMaybe<Scalars["Boolean"]>;
@@ -8030,7 +8153,7 @@ export type IntegrationsSettings = Node & {
   slackIssueSlaHighRisk?: Maybe<Scalars["Boolean"]>;
   /** Whether to send a Slack message when any of the project or team's issues has a change in status. */
   slackIssueStatusChangedAll?: Maybe<Scalars["Boolean"]>;
-  /** Whether to send a Slack message when any of the project or team's issues change to completed or cancelled. */
+  /** Whether to send a Slack message when any of the project or team's issues change to completed or canceled. */
   slackIssueStatusChangedDone?: Maybe<Scalars["Boolean"]>;
   /** Whether to send a Slack message when a project update is created. */
   slackProjectUpdateCreated?: Maybe<Scalars["Boolean"]>;
@@ -8076,7 +8199,7 @@ export type IntegrationsSettingsCreateInput = {
   slackIssueSlaHighRisk?: InputMaybe<Scalars["Boolean"]>;
   /** Whether to send a Slack message when any of the project or team's issues has a change in status. */
   slackIssueStatusChangedAll?: InputMaybe<Scalars["Boolean"]>;
-  /** Whether to send a Slack message when any of the project or team's issues change to completed or cancelled. */
+  /** Whether to send a Slack message when any of the project or team's issues change to completed or canceled. */
   slackIssueStatusChangedDone?: InputMaybe<Scalars["Boolean"]>;
   /** Whether to send a Slack message when a project update is created. */
   slackProjectUpdateCreated?: InputMaybe<Scalars["Boolean"]>;
@@ -8117,7 +8240,7 @@ export type IntegrationsSettingsUpdateInput = {
   slackIssueSlaHighRisk?: InputMaybe<Scalars["Boolean"]>;
   /** Whether to send a Slack message when any of the project or team's issues has a change in status. */
   slackIssueStatusChangedAll?: InputMaybe<Scalars["Boolean"]>;
-  /** Whether to send a Slack message when any of the project or team's issues change to completed or cancelled. */
+  /** Whether to send a Slack message when any of the project or team's issues change to completed or canceled. */
   slackIssueStatusChangedDone?: InputMaybe<Scalars["Boolean"]>;
   /** Whether to send a Slack message when a project update is created. */
   slackProjectUpdateCreated?: InputMaybe<Scalars["Boolean"]>;
@@ -8128,13 +8251,13 @@ export type IntegrationsSettingsUpdateInput = {
 };
 
 export type IntercomSettingsInput = {
-  /** Whether a ticket should be automatically reopened when its linked Linear issue is cancelled. */
+  /** Whether a ticket should be automatically reopened when its linked Linear issue is canceled. */
   automateTicketReopeningOnCancellation?: InputMaybe<Scalars["Boolean"]>;
   /** Whether a ticket should be automatically reopened when a comment is posted on its linked Linear issue */
   automateTicketReopeningOnComment?: InputMaybe<Scalars["Boolean"]>;
   /** Whether a ticket should be automatically reopened when its linked Linear issue is completed. */
   automateTicketReopeningOnCompletion?: InputMaybe<Scalars["Boolean"]>;
-  /** Whether a ticket should be automatically reopened when its linked Linear project is cancelled. */
+  /** Whether a ticket should be automatically reopened when its linked Linear project is canceled. */
   automateTicketReopeningOnProjectCancellation?: InputMaybe<Scalars["Boolean"]>;
   /** Whether a ticket should be automatically reopened when its linked Linear project is completed. */
   automateTicketReopeningOnProjectCompletion?: InputMaybe<Scalars["Boolean"]>;
@@ -20399,8 +20522,12 @@ export type ReleaseNoteCreateInput = {
   id?: InputMaybe<Scalars["String"]>;
   /** Identifier of the release pipeline. */
   pipelineId: Scalars["String"];
-  /** The releases included in this note. */
-  releaseIds: Array<Scalars["String"]>;
+  /** Oldest release (by createdAt) to include. When paired with rangeToReleaseId, expands to every release in the pipeline within the createdAt window. */
+  rangeFromReleaseId?: InputMaybe<Scalars["String"]>;
+  /** Newest release (by createdAt) to include. Paired with rangeFromReleaseId. */
+  rangeToReleaseId?: InputMaybe<Scalars["String"]>;
+  /** Explicit release IDs to include. Mutually exclusive with rangeFromReleaseId/rangeToReleaseId — exactly one of the two shapes must be provided. */
+  releaseIds?: InputMaybe<Array<Scalars["String"]>>;
 };
 
 export type ReleaseNoteEdge = {
@@ -20423,7 +20550,11 @@ export type ReleaseNotePayload = {
 
 /** [ALPHA] Input for updating a release note. */
 export type ReleaseNoteUpdateInput = {
-  /** The releases included in this note. */
+  /** Oldest release (by createdAt) of the new range. Paired with rangeToReleaseId. */
+  rangeFromReleaseId?: InputMaybe<Scalars["String"]>;
+  /** Newest release (by createdAt) of the new range. Paired with rangeFromReleaseId. */
+  rangeToReleaseId?: InputMaybe<Scalars["String"]>;
+  /** Explicit release IDs to set. Mutually exclusive with rangeFromReleaseId/rangeToReleaseId. */
   releaseIds?: InputMaybe<Array<Scalars["String"]>>;
 };
 
@@ -20455,6 +20586,8 @@ export type ReleasePipeline = Node & {
   isProduction: Scalars["Boolean"];
   /** The name of the pipeline. */
   name: Scalars["String"];
+  /** [Internal] The document template used to define the release notes format for this pipeline. AI-generated release notes follow the structure and tone of this template. Null if no template has been configured. */
+  releaseNoteTemplate?: Maybe<Template>;
   /** [ALPHA] Releases associated with this pipeline. */
   releases: ReleaseConnection;
   /** The pipeline's unique slug identifier, used in URLs and for lookup by human-readable identifier instead of UUID. */
@@ -21255,13 +21388,13 @@ export type SalesforceMetadataIntegrationComparator = {
 };
 
 export type SalesforceSettingsInput = {
-  /** Whether a ticket should be automatically reopened when its linked Linear issue is cancelled. */
+  /** Whether a ticket should be automatically reopened when its linked Linear issue is canceled. */
   automateTicketReopeningOnCancellation?: InputMaybe<Scalars["Boolean"]>;
   /** Whether a ticket should be automatically reopened when a comment is posted on its linked Linear issue */
   automateTicketReopeningOnComment?: InputMaybe<Scalars["Boolean"]>;
   /** Whether a ticket should be automatically reopened when its linked Linear issue is completed. */
   automateTicketReopeningOnCompletion?: InputMaybe<Scalars["Boolean"]>;
-  /** Whether a ticket should be automatically reopened when its linked Linear project is cancelled. */
+  /** Whether a ticket should be automatically reopened when its linked Linear project is canceled. */
   automateTicketReopeningOnProjectCancellation?: InputMaybe<Scalars["Boolean"]>;
   /** Whether a ticket should be automatically reopened when its linked Linear project is completed. */
   automateTicketReopeningOnProjectCompletion?: InputMaybe<Scalars["Boolean"]>;
@@ -22869,6 +23002,8 @@ export type Template = Node & {
   name: Scalars["String"];
   /** The workspace that owns this template. */
   organization: Organization;
+  /** [Internal] The release pipeline this template is bound to. Required when the template type is 'releaseNote' and forbidden otherwise. The pipeline owns at most one release note template, which defines the format AI follows when generating release notes. */
+  pipeline?: Maybe<ReleasePipeline>;
   /** The sort order of the template within the templates list. */
   sortOrder: Scalars["Float"];
   /** The team that the template is associated with. If null, the template is global to the workspace. */
@@ -22903,6 +23038,8 @@ export type TemplateCreateInput = {
   id?: InputMaybe<Scalars["String"]>;
   /** The template name. */
   name: Scalars["String"];
+  /** The identifier of the release pipeline this template is bound to. Required when the template type is 'releaseNote' and rejected otherwise. Each pipeline can have at most one release note template. */
+  pipelineId?: InputMaybe<Scalars["String"]>;
   /** The sort position of the template in the templates list. */
   sortOrder?: InputMaybe<Scalars["Float"]>;
   /** The identifier or key of the team associated with the template. If not given, the template will be shared across all teams. */
@@ -24153,6 +24290,8 @@ export type ViewPreferencesValues = {
   focusViewOrdering?: Maybe<Scalars["String"]>;
   /** The focus view ordering direction. */
   focusViewOrderingDirection?: Maybe<Scalars["String"]>;
+  /** The ordering mode for groups. Supersedes projectGroupOrdering. */
+  groupOrderingMode?: Maybe<Scalars["String"]>;
   /** List of column model IDs which should be hidden on a board. */
   hiddenColumns?: Maybe<Array<Scalars["String"]>>;
   /** List of group model IDs which should be hidden on a list. */
@@ -24293,7 +24432,10 @@ export type ViewPreferencesValues = {
   projectFieldTeamsList?: Maybe<Scalars["Boolean"]>;
   /** Whether to show the project teams field on the timeline. */
   projectFieldTeamsTimeline?: Maybe<Scalars["Boolean"]>;
-  /** The ordering of project groups. */
+  /**
+   * The ordering of project groups.
+   * @deprecated Use groupOrderingMode instead.
+   */
   projectGroupOrdering?: Maybe<Scalars["String"]>;
   /** The project grouping. */
   projectGrouping?: Maybe<Scalars["String"]>;
@@ -24982,13 +25124,13 @@ export enum WorkflowType {
 }
 
 export type ZendeskSettingsInput = {
-  /** Whether a ticket should be automatically reopened when its linked Linear issue is cancelled. */
+  /** Whether a ticket should be automatically reopened when its linked Linear issue is canceled. */
   automateTicketReopeningOnCancellation?: InputMaybe<Scalars["Boolean"]>;
   /** Whether a ticket should be automatically reopened when a comment is posted on its linked Linear issue */
   automateTicketReopeningOnComment?: InputMaybe<Scalars["Boolean"]>;
   /** Whether a ticket should be automatically reopened when its linked Linear issue is completed. */
   automateTicketReopeningOnCompletion?: InputMaybe<Scalars["Boolean"]>;
-  /** Whether a ticket should be automatically reopened when its linked Linear project is cancelled. */
+  /** Whether a ticket should be automatically reopened when its linked Linear project is canceled. */
   automateTicketReopeningOnProjectCancellation?: InputMaybe<Scalars["Boolean"]>;
   /** Whether a ticket should be automatically reopened when its linked Linear project is completed. */
   automateTicketReopeningOnProjectCompletion?: InputMaybe<Scalars["Boolean"]>;
@@ -25052,6 +25194,16 @@ export type IdentityProviderFragment = { __typename: "IdentityProvider" } & Pick
   | "allowNameChange"
   | "ssoSigningCert"
 >;
+
+type AiConversationBasePart_AiConversationEventPart_Fragment = { __typename: "AiConversationEventPart" } & Pick<
+  AiConversationEventPart,
+  "id" | "type" | "subscriptionId" | "body" | "bodyData"
+> & {
+    metadata: { __typename: "AiConversationPartMetadata" } & Pick<
+      AiConversationPartMetadata,
+      "feedback" | "evalLogId" | "phase" | "endedAt" | "startedAt" | "turnId"
+    >;
+  };
 
 type AiConversationBasePart_AiConversationPromptPart_Fragment = { __typename: "AiConversationPromptPart" } & Pick<
   AiConversationPromptPart,
@@ -25149,6 +25301,26 @@ type AiConversationBasePart_AiConversationToolCallPart_Fragment = { __typename: 
               "activeLabel" | "detail" | "icon" | "inactiveLabel" | "result"
             >;
           })
+      | ({ __typename: "AiConversationGetPullRequestCheckLogsToolCall" } & Pick<
+          AiConversationGetPullRequestCheckLogsToolCall,
+          "rawArgs" | "name" | "rawResult"
+        > & {
+            args?: Maybe<
+              { __typename: "AiConversationGetPullRequestCheckLogsToolCallArgs" } & Pick<
+                AiConversationGetPullRequestCheckLogsToolCallArgs,
+                "checkName" | "workflowName"
+              > & {
+                  entity: { __typename: "AiConversationSearchEntitiesToolCallResultEntities" } & Pick<
+                    AiConversationSearchEntitiesToolCallResultEntities,
+                    "id" | "type"
+                  >;
+                }
+            >;
+            displayInfo: { __typename: "AiConversationToolDisplayInfo" } & Pick<
+              AiConversationToolDisplayInfo,
+              "activeLabel" | "detail" | "icon" | "inactiveLabel" | "result"
+            >;
+          })
       | ({ __typename: "AiConversationGetPullRequestDiffToolCall" } & Pick<
           AiConversationGetPullRequestDiffToolCall,
           "rawArgs" | "name" | "rawResult"
@@ -25241,15 +25413,19 @@ type AiConversationBasePart_AiConversationToolCallPart_Fragment = { __typename: 
           "rawArgs" | "name" | "rawResult"
         > & {
             args?: Maybe<
-              { __typename: "AiConversationNavigateToPageToolCallArgs" } & Pick<
-                AiConversationNavigateToPageToolCallArgs,
-                "entityType" | "identifier"
-              >
+              { __typename: "AiConversationNavigateToPageToolCallArgs" } & {
+                entities: Array<
+                  { __typename: "AiConversationNavigateToPageToolCallArgsEntities" } & Pick<
+                    AiConversationNavigateToPageToolCallArgsEntities,
+                    "entityType" | "uuid"
+                  >
+                >;
+              }
             >;
             result?: Maybe<
               { __typename: "AiConversationNavigateToPageToolCallResult" } & Pick<
                 AiConversationNavigateToPageToolCallResult,
-                "newTab" | "url"
+                "urls"
               >
             >;
             displayInfo: { __typename: "AiConversationToolDisplayInfo" } & Pick<
@@ -25393,6 +25569,26 @@ type AiConversationBasePart_AiConversationToolCallPart_Fragment = { __typename: 
               "activeLabel" | "detail" | "icon" | "inactiveLabel" | "result"
             >;
           })
+      | ({ __typename: "AiConversationRetryPullRequestCheckToolCall" } & Pick<
+          AiConversationRetryPullRequestCheckToolCall,
+          "rawArgs" | "name" | "rawResult"
+        > & {
+            args?: Maybe<
+              { __typename: "AiConversationRetryPullRequestCheckToolCallArgs" } & Pick<
+                AiConversationRetryPullRequestCheckToolCallArgs,
+                "checkName" | "workflowName"
+              > & {
+                  entity: { __typename: "AiConversationSearchEntitiesToolCallResultEntities" } & Pick<
+                    AiConversationSearchEntitiesToolCallResultEntities,
+                    "id" | "type"
+                  >;
+                }
+            >;
+            displayInfo: { __typename: "AiConversationToolDisplayInfo" } & Pick<
+              AiConversationToolDisplayInfo,
+              "activeLabel" | "detail" | "icon" | "inactiveLabel" | "result"
+            >;
+          })
       | ({ __typename: "AiConversationSearchDocumentationToolCall" } & Pick<
           AiConversationSearchDocumentationToolCall,
           "rawArgs" | "name" | "rawResult"
@@ -25427,6 +25623,21 @@ type AiConversationBasePart_AiConversationToolCallPart_Fragment = { __typename: 
               "activeLabel" | "detail" | "icon" | "inactiveLabel" | "result"
             >;
           })
+      | ({ __typename: "AiConversationSubscribeToEventToolCall" } & Pick<
+          AiConversationSubscribeToEventToolCall,
+          "rawArgs" | "name" | "rawResult"
+        > & {
+            args?: Maybe<
+              { __typename: "AiConversationSubscribeToEventToolCallArgs" } & Pick<
+                AiConversationSubscribeToEventToolCallArgs,
+                "endsAt" | "kind" | "message" | "subscriptionId" | "type"
+              >
+            >;
+            displayInfo: { __typename: "AiConversationToolDisplayInfo" } & Pick<
+              AiConversationToolDisplayInfo,
+              "activeLabel" | "detail" | "icon" | "inactiveLabel" | "result"
+            >;
+          })
       | ({ __typename: "AiConversationSuggestValuesToolCall" } & Pick<
           AiConversationSuggestValuesToolCall,
           "rawArgs" | "name" | "rawResult"
@@ -25455,6 +25666,21 @@ type AiConversationBasePart_AiConversationToolCallPart_Fragment = { __typename: 
           AiConversationTranscribeVideoToolCall,
           "rawArgs" | "name" | "rawResult"
         > & {
+            displayInfo: { __typename: "AiConversationToolDisplayInfo" } & Pick<
+              AiConversationToolDisplayInfo,
+              "activeLabel" | "detail" | "icon" | "inactiveLabel" | "result"
+            >;
+          })
+      | ({ __typename: "AiConversationUnsubscribeFromEventToolCall" } & Pick<
+          AiConversationUnsubscribeFromEventToolCall,
+          "rawArgs" | "name" | "rawResult"
+        > & {
+            args?: Maybe<
+              { __typename: "AiConversationUnsubscribeFromEventToolCallArgs" } & Pick<
+                AiConversationUnsubscribeFromEventToolCallArgs,
+                "message" | "subscriptionId"
+              >
+            >;
             displayInfo: { __typename: "AiConversationToolDisplayInfo" } & Pick<
               AiConversationToolDisplayInfo,
               "activeLabel" | "detail" | "icon" | "inactiveLabel" | "result"
@@ -25551,6 +25777,7 @@ type AiConversationBasePart_AiConversationWidgetPart_Fragment = { __typename: "A
   };
 
 export type AiConversationBasePartFragment =
+  | AiConversationBasePart_AiConversationEventPart_Fragment
   | AiConversationBasePart_AiConversationPromptPart_Fragment
   | AiConversationBasePart_AiConversationReasoningPart_Fragment
   | AiConversationBasePart_AiConversationTextPart_Fragment
@@ -25877,6 +26104,7 @@ export type CustomViewFragment = { __typename: "CustomView" } & Pick<
         | "issueSubGroupingLabelGroupId"
         | "projectGroupingLabelGroupId"
         | "projectSubGroupingLabelGroupId"
+        | "groupOrderingMode"
         | "projectGroupOrdering"
         | "projectCustomerNeedsViewGrouping"
         | "projectCustomerNeedsViewOrdering"
@@ -26105,6 +26333,7 @@ export type CustomViewFragment = { __typename: "CustomView" } & Pick<
             | "issueSubGroupingLabelGroupId"
             | "projectGroupingLabelGroupId"
             | "projectSubGroupingLabelGroupId"
+            | "groupOrderingMode"
             | "projectGroupOrdering"
             | "projectCustomerNeedsViewGrouping"
             | "projectCustomerNeedsViewOrdering"
@@ -26338,6 +26567,7 @@ export type CustomViewFragment = { __typename: "CustomView" } & Pick<
             | "issueSubGroupingLabelGroupId"
             | "projectGroupingLabelGroupId"
             | "projectSubGroupingLabelGroupId"
+            | "groupOrderingMode"
             | "projectGroupOrdering"
             | "projectCustomerNeedsViewGrouping"
             | "projectCustomerNeedsViewOrdering"
@@ -29774,6 +30004,26 @@ export type AiConversationToolCallPartFragment = { __typename: "AiConversationTo
               "activeLabel" | "detail" | "icon" | "inactiveLabel" | "result"
             >;
           })
+      | ({ __typename: "AiConversationGetPullRequestCheckLogsToolCall" } & Pick<
+          AiConversationGetPullRequestCheckLogsToolCall,
+          "rawArgs" | "name" | "rawResult"
+        > & {
+            args?: Maybe<
+              { __typename: "AiConversationGetPullRequestCheckLogsToolCallArgs" } & Pick<
+                AiConversationGetPullRequestCheckLogsToolCallArgs,
+                "checkName" | "workflowName"
+              > & {
+                  entity: { __typename: "AiConversationSearchEntitiesToolCallResultEntities" } & Pick<
+                    AiConversationSearchEntitiesToolCallResultEntities,
+                    "id" | "type"
+                  >;
+                }
+            >;
+            displayInfo: { __typename: "AiConversationToolDisplayInfo" } & Pick<
+              AiConversationToolDisplayInfo,
+              "activeLabel" | "detail" | "icon" | "inactiveLabel" | "result"
+            >;
+          })
       | ({ __typename: "AiConversationGetPullRequestDiffToolCall" } & Pick<
           AiConversationGetPullRequestDiffToolCall,
           "rawArgs" | "name" | "rawResult"
@@ -29866,15 +30116,19 @@ export type AiConversationToolCallPartFragment = { __typename: "AiConversationTo
           "rawArgs" | "name" | "rawResult"
         > & {
             args?: Maybe<
-              { __typename: "AiConversationNavigateToPageToolCallArgs" } & Pick<
-                AiConversationNavigateToPageToolCallArgs,
-                "entityType" | "identifier"
-              >
+              { __typename: "AiConversationNavigateToPageToolCallArgs" } & {
+                entities: Array<
+                  { __typename: "AiConversationNavigateToPageToolCallArgsEntities" } & Pick<
+                    AiConversationNavigateToPageToolCallArgsEntities,
+                    "entityType" | "uuid"
+                  >
+                >;
+              }
             >;
             result?: Maybe<
               { __typename: "AiConversationNavigateToPageToolCallResult" } & Pick<
                 AiConversationNavigateToPageToolCallResult,
-                "newTab" | "url"
+                "urls"
               >
             >;
             displayInfo: { __typename: "AiConversationToolDisplayInfo" } & Pick<
@@ -30018,6 +30272,26 @@ export type AiConversationToolCallPartFragment = { __typename: "AiConversationTo
               "activeLabel" | "detail" | "icon" | "inactiveLabel" | "result"
             >;
           })
+      | ({ __typename: "AiConversationRetryPullRequestCheckToolCall" } & Pick<
+          AiConversationRetryPullRequestCheckToolCall,
+          "rawArgs" | "name" | "rawResult"
+        > & {
+            args?: Maybe<
+              { __typename: "AiConversationRetryPullRequestCheckToolCallArgs" } & Pick<
+                AiConversationRetryPullRequestCheckToolCallArgs,
+                "checkName" | "workflowName"
+              > & {
+                  entity: { __typename: "AiConversationSearchEntitiesToolCallResultEntities" } & Pick<
+                    AiConversationSearchEntitiesToolCallResultEntities,
+                    "id" | "type"
+                  >;
+                }
+            >;
+            displayInfo: { __typename: "AiConversationToolDisplayInfo" } & Pick<
+              AiConversationToolDisplayInfo,
+              "activeLabel" | "detail" | "icon" | "inactiveLabel" | "result"
+            >;
+          })
       | ({ __typename: "AiConversationSearchDocumentationToolCall" } & Pick<
           AiConversationSearchDocumentationToolCall,
           "rawArgs" | "name" | "rawResult"
@@ -30052,6 +30326,21 @@ export type AiConversationToolCallPartFragment = { __typename: "AiConversationTo
               "activeLabel" | "detail" | "icon" | "inactiveLabel" | "result"
             >;
           })
+      | ({ __typename: "AiConversationSubscribeToEventToolCall" } & Pick<
+          AiConversationSubscribeToEventToolCall,
+          "rawArgs" | "name" | "rawResult"
+        > & {
+            args?: Maybe<
+              { __typename: "AiConversationSubscribeToEventToolCallArgs" } & Pick<
+                AiConversationSubscribeToEventToolCallArgs,
+                "endsAt" | "kind" | "message" | "subscriptionId" | "type"
+              >
+            >;
+            displayInfo: { __typename: "AiConversationToolDisplayInfo" } & Pick<
+              AiConversationToolDisplayInfo,
+              "activeLabel" | "detail" | "icon" | "inactiveLabel" | "result"
+            >;
+          })
       | ({ __typename: "AiConversationSuggestValuesToolCall" } & Pick<
           AiConversationSuggestValuesToolCall,
           "rawArgs" | "name" | "rawResult"
@@ -30080,6 +30369,21 @@ export type AiConversationToolCallPartFragment = { __typename: "AiConversationTo
           AiConversationTranscribeVideoToolCall,
           "rawArgs" | "name" | "rawResult"
         > & {
+            displayInfo: { __typename: "AiConversationToolDisplayInfo" } & Pick<
+              AiConversationToolDisplayInfo,
+              "activeLabel" | "detail" | "icon" | "inactiveLabel" | "result"
+            >;
+          })
+      | ({ __typename: "AiConversationUnsubscribeFromEventToolCall" } & Pick<
+          AiConversationUnsubscribeFromEventToolCall,
+          "rawArgs" | "name" | "rawResult"
+        > & {
+            args?: Maybe<
+              { __typename: "AiConversationUnsubscribeFromEventToolCallArgs" } & Pick<
+                AiConversationUnsubscribeFromEventToolCallArgs,
+                "message" | "subscriptionId"
+              >
+            >;
             displayInfo: { __typename: "AiConversationToolDisplayInfo" } & Pick<
               AiConversationToolDisplayInfo,
               "activeLabel" | "detail" | "icon" | "inactiveLabel" | "result"
@@ -30781,6 +31085,16 @@ export type IssueHistoryTriageRuleErrorFragment = { __typename: "IssueHistoryTri
     >;
     fromTeam?: Maybe<{ __typename?: "Team" } & Pick<Team, "id">>;
     toTeam?: Maybe<{ __typename?: "Team" } & Pick<Team, "id">>;
+  };
+
+export type AiConversationEventPartFragment = { __typename: "AiConversationEventPart" } & Pick<
+  AiConversationEventPart,
+  "id" | "subscriptionId" | "body" | "bodyData" | "type"
+> & {
+    metadata: { __typename: "AiConversationPartMetadata" } & Pick<
+      AiConversationPartMetadata,
+      "feedback" | "evalLogId" | "phase" | "endedAt" | "startedAt" | "turnId"
+    >;
   };
 
 export type AgentSessionExternalLinkFragment = { __typename: "AgentSessionExternalLink" } & Pick<
@@ -34131,6 +34445,7 @@ export type ViewPreferencesValuesFragment = { __typename: "ViewPreferencesValues
   | "issueSubGroupingLabelGroupId"
   | "projectGroupingLabelGroupId"
   | "projectSubGroupingLabelGroupId"
+  | "groupOrderingMode"
   | "projectGroupOrdering"
   | "projectCustomerNeedsViewGrouping"
   | "projectCustomerNeedsViewOrdering"
@@ -34401,6 +34716,7 @@ export type ViewPreferencesFragment = { __typename: "ViewPreferences" } & Pick<
       | "issueSubGroupingLabelGroupId"
       | "projectGroupingLabelGroupId"
       | "projectSubGroupingLabelGroupId"
+      | "groupOrderingMode"
       | "projectGroupOrdering"
       | "projectCustomerNeedsViewGrouping"
       | "projectCustomerNeedsViewOrdering"
@@ -35110,6 +35426,7 @@ export type ViewPreferencesPayloadFragment = { __typename: "ViewPreferencesPaylo
           | "issueSubGroupingLabelGroupId"
           | "projectGroupingLabelGroupId"
           | "projectSubGroupingLabelGroupId"
+          | "groupOrderingMode"
           | "projectGroupOrdering"
           | "projectCustomerNeedsViewGrouping"
           | "projectCustomerNeedsViewOrdering"
@@ -35695,6 +36012,26 @@ type AiConversationBaseToolCall_AiConversationGetMicrosoftTeamsConversationHisto
     >;
   };
 
+type AiConversationBaseToolCall_AiConversationGetPullRequestCheckLogsToolCall_Fragment = {
+  __typename: "AiConversationGetPullRequestCheckLogsToolCall";
+} & Pick<AiConversationGetPullRequestCheckLogsToolCall, "rawArgs" | "name" | "rawResult"> & {
+    displayInfo: { __typename: "AiConversationToolDisplayInfo" } & Pick<
+      AiConversationToolDisplayInfo,
+      "activeLabel" | "detail" | "icon" | "inactiveLabel" | "result"
+    >;
+    args?: Maybe<
+      { __typename: "AiConversationGetPullRequestCheckLogsToolCallArgs" } & Pick<
+        AiConversationGetPullRequestCheckLogsToolCallArgs,
+        "checkName" | "workflowName"
+      > & {
+          entity: { __typename: "AiConversationSearchEntitiesToolCallResultEntities" } & Pick<
+            AiConversationSearchEntitiesToolCallResultEntities,
+            "id" | "type"
+          >;
+        }
+    >;
+  };
+
 type AiConversationBaseToolCall_AiConversationGetPullRequestDiffToolCall_Fragment = {
   __typename: "AiConversationGetPullRequestDiffToolCall";
 } & Pick<AiConversationGetPullRequestDiffToolCall, "rawArgs" | "name" | "rawResult"> & {
@@ -35790,15 +36127,19 @@ type AiConversationBaseToolCall_AiConversationNavigateToPageToolCall_Fragment = 
       "activeLabel" | "detail" | "icon" | "inactiveLabel" | "result"
     >;
     args?: Maybe<
-      { __typename: "AiConversationNavigateToPageToolCallArgs" } & Pick<
-        AiConversationNavigateToPageToolCallArgs,
-        "entityType" | "identifier"
-      >
+      { __typename: "AiConversationNavigateToPageToolCallArgs" } & {
+        entities: Array<
+          { __typename: "AiConversationNavigateToPageToolCallArgsEntities" } & Pick<
+            AiConversationNavigateToPageToolCallArgsEntities,
+            "entityType" | "uuid"
+          >
+        >;
+      }
     >;
     result?: Maybe<
       { __typename: "AiConversationNavigateToPageToolCallResult" } & Pick<
         AiConversationNavigateToPageToolCallResult,
-        "newTab" | "url"
+        "urls"
       >
     >;
   };
@@ -35936,6 +36277,26 @@ type AiConversationBaseToolCall_AiConversationRetrieveEntitiesToolCall_Fragment 
     >;
   };
 
+type AiConversationBaseToolCall_AiConversationRetryPullRequestCheckToolCall_Fragment = {
+  __typename: "AiConversationRetryPullRequestCheckToolCall";
+} & Pick<AiConversationRetryPullRequestCheckToolCall, "rawArgs" | "name" | "rawResult"> & {
+    displayInfo: { __typename: "AiConversationToolDisplayInfo" } & Pick<
+      AiConversationToolDisplayInfo,
+      "activeLabel" | "detail" | "icon" | "inactiveLabel" | "result"
+    >;
+    args?: Maybe<
+      { __typename: "AiConversationRetryPullRequestCheckToolCallArgs" } & Pick<
+        AiConversationRetryPullRequestCheckToolCallArgs,
+        "checkName" | "workflowName"
+      > & {
+          entity: { __typename: "AiConversationSearchEntitiesToolCallResultEntities" } & Pick<
+            AiConversationSearchEntitiesToolCallResultEntities,
+            "id" | "type"
+          >;
+        }
+    >;
+  };
+
 type AiConversationBaseToolCall_AiConversationSearchDocumentationToolCall_Fragment = {
   __typename: "AiConversationSearchDocumentationToolCall";
 } & Pick<AiConversationSearchDocumentationToolCall, "rawArgs" | "name" | "rawResult"> & {
@@ -35970,6 +36331,21 @@ type AiConversationBaseToolCall_AiConversationSearchEntitiesToolCall_Fragment = 
     >;
   };
 
+type AiConversationBaseToolCall_AiConversationSubscribeToEventToolCall_Fragment = {
+  __typename: "AiConversationSubscribeToEventToolCall";
+} & Pick<AiConversationSubscribeToEventToolCall, "rawArgs" | "name" | "rawResult"> & {
+    displayInfo: { __typename: "AiConversationToolDisplayInfo" } & Pick<
+      AiConversationToolDisplayInfo,
+      "activeLabel" | "detail" | "icon" | "inactiveLabel" | "result"
+    >;
+    args?: Maybe<
+      { __typename: "AiConversationSubscribeToEventToolCallArgs" } & Pick<
+        AiConversationSubscribeToEventToolCallArgs,
+        "endsAt" | "kind" | "message" | "subscriptionId" | "type"
+      >
+    >;
+  };
+
 type AiConversationBaseToolCall_AiConversationSuggestValuesToolCall_Fragment = {
   __typename: "AiConversationSuggestValuesToolCall";
 } & Pick<AiConversationSuggestValuesToolCall, "rawArgs" | "name" | "rawResult"> & {
@@ -36000,6 +36376,21 @@ type AiConversationBaseToolCall_AiConversationTranscribeVideoToolCall_Fragment =
     displayInfo: { __typename: "AiConversationToolDisplayInfo" } & Pick<
       AiConversationToolDisplayInfo,
       "activeLabel" | "detail" | "icon" | "inactiveLabel" | "result"
+    >;
+  };
+
+type AiConversationBaseToolCall_AiConversationUnsubscribeFromEventToolCall_Fragment = {
+  __typename: "AiConversationUnsubscribeFromEventToolCall";
+} & Pick<AiConversationUnsubscribeFromEventToolCall, "rawArgs" | "name" | "rawResult"> & {
+    displayInfo: { __typename: "AiConversationToolDisplayInfo" } & Pick<
+      AiConversationToolDisplayInfo,
+      "activeLabel" | "detail" | "icon" | "inactiveLabel" | "result"
+    >;
+    args?: Maybe<
+      { __typename: "AiConversationUnsubscribeFromEventToolCallArgs" } & Pick<
+        AiConversationUnsubscribeFromEventToolCallArgs,
+        "message" | "subscriptionId"
+      >
     >;
   };
 
@@ -36047,6 +36438,7 @@ export type AiConversationBaseToolCallFragment =
   | AiConversationBaseToolCall_AiConversationCreateEntityToolCall_Fragment
   | AiConversationBaseToolCall_AiConversationDeleteEntityToolCall_Fragment
   | AiConversationBaseToolCall_AiConversationGetMicrosoftTeamsConversationHistoryToolCall_Fragment
+  | AiConversationBaseToolCall_AiConversationGetPullRequestCheckLogsToolCall_Fragment
   | AiConversationBaseToolCall_AiConversationGetPullRequestDiffToolCall_Fragment
   | AiConversationBaseToolCall_AiConversationGetPullRequestFileToolCall_Fragment
   | AiConversationBaseToolCall_AiConversationGetSlackConversationHistoryToolCall_Fragment
@@ -36059,11 +36451,14 @@ export type AiConversationBaseToolCallFragment =
   | AiConversationBaseToolCall_AiConversationResearchToolCall_Fragment
   | AiConversationBaseToolCall_AiConversationRestoreEntityToolCall_Fragment
   | AiConversationBaseToolCall_AiConversationRetrieveEntitiesToolCall_Fragment
+  | AiConversationBaseToolCall_AiConversationRetryPullRequestCheckToolCall_Fragment
   | AiConversationBaseToolCall_AiConversationSearchDocumentationToolCall_Fragment
   | AiConversationBaseToolCall_AiConversationSearchEntitiesToolCall_Fragment
+  | AiConversationBaseToolCall_AiConversationSubscribeToEventToolCall_Fragment
   | AiConversationBaseToolCall_AiConversationSuggestValuesToolCall_Fragment
   | AiConversationBaseToolCall_AiConversationTranscribeMediaToolCall_Fragment
   | AiConversationBaseToolCall_AiConversationTranscribeVideoToolCall_Fragment
+  | AiConversationBaseToolCall_AiConversationUnsubscribeFromEventToolCall_Fragment
   | AiConversationBaseToolCall_AiConversationUpdateEntityToolCall_Fragment
   | AiConversationBaseToolCall_AiConversationWebSearchToolCall_Fragment;
 
@@ -36239,6 +36634,35 @@ export type AiConversationGetMicrosoftTeamsConversationHistoryToolCallFragment =
     >;
   };
 
+export type AiConversationGetPullRequestCheckLogsToolCallFragment = {
+  __typename: "AiConversationGetPullRequestCheckLogsToolCall";
+} & Pick<AiConversationGetPullRequestCheckLogsToolCall, "rawArgs" | "name" | "rawResult"> & {
+    args?: Maybe<
+      { __typename: "AiConversationGetPullRequestCheckLogsToolCallArgs" } & Pick<
+        AiConversationGetPullRequestCheckLogsToolCallArgs,
+        "checkName" | "workflowName"
+      > & {
+          entity: { __typename: "AiConversationSearchEntitiesToolCallResultEntities" } & Pick<
+            AiConversationSearchEntitiesToolCallResultEntities,
+            "id" | "type"
+          >;
+        }
+    >;
+    displayInfo: { __typename: "AiConversationToolDisplayInfo" } & Pick<
+      AiConversationToolDisplayInfo,
+      "activeLabel" | "detail" | "icon" | "inactiveLabel" | "result"
+    >;
+  };
+
+export type AiConversationGetPullRequestCheckLogsToolCallArgsFragment = {
+  __typename: "AiConversationGetPullRequestCheckLogsToolCallArgs";
+} & Pick<AiConversationGetPullRequestCheckLogsToolCallArgs, "checkName" | "workflowName"> & {
+    entity: { __typename: "AiConversationSearchEntitiesToolCallResultEntities" } & Pick<
+      AiConversationSearchEntitiesToolCallResultEntities,
+      "id" | "type"
+    >;
+  };
+
 export type AiConversationGetPullRequestDiffToolCallFragment = {
   __typename: "AiConversationGetPullRequestDiffToolCall";
 } & Pick<AiConversationGetPullRequestDiffToolCall, "rawArgs" | "name" | "rawResult"> & {
@@ -36379,15 +36803,19 @@ export type AiConversationNavigateToPageToolCallFragment = {
   __typename: "AiConversationNavigateToPageToolCall";
 } & Pick<AiConversationNavigateToPageToolCall, "rawArgs" | "name" | "rawResult"> & {
     args?: Maybe<
-      { __typename: "AiConversationNavigateToPageToolCallArgs" } & Pick<
-        AiConversationNavigateToPageToolCallArgs,
-        "entityType" | "identifier"
-      >
+      { __typename: "AiConversationNavigateToPageToolCallArgs" } & {
+        entities: Array<
+          { __typename: "AiConversationNavigateToPageToolCallArgsEntities" } & Pick<
+            AiConversationNavigateToPageToolCallArgsEntities,
+            "entityType" | "uuid"
+          >
+        >;
+      }
     >;
     result?: Maybe<
       { __typename: "AiConversationNavigateToPageToolCallResult" } & Pick<
         AiConversationNavigateToPageToolCallResult,
-        "newTab" | "url"
+        "urls"
       >
     >;
     displayInfo: { __typename: "AiConversationToolDisplayInfo" } & Pick<
@@ -36398,11 +36826,22 @@ export type AiConversationNavigateToPageToolCallFragment = {
 
 export type AiConversationNavigateToPageToolCallArgsFragment = {
   __typename: "AiConversationNavigateToPageToolCallArgs";
-} & Pick<AiConversationNavigateToPageToolCallArgs, "entityType" | "identifier">;
+} & {
+  entities: Array<
+    { __typename: "AiConversationNavigateToPageToolCallArgsEntities" } & Pick<
+      AiConversationNavigateToPageToolCallArgsEntities,
+      "entityType" | "uuid"
+    >
+  >;
+};
+
+export type AiConversationNavigateToPageToolCallArgsEntitiesFragment = {
+  __typename: "AiConversationNavigateToPageToolCallArgsEntities";
+} & Pick<AiConversationNavigateToPageToolCallArgsEntities, "entityType" | "uuid">;
 
 export type AiConversationNavigateToPageToolCallResultFragment = {
   __typename: "AiConversationNavigateToPageToolCallResult";
-} & Pick<AiConversationNavigateToPageToolCallResult, "newTab" | "url">;
+} & Pick<AiConversationNavigateToPageToolCallResult, "urls">;
 
 export type AiConversationQueryActivityToolCallFragment = { __typename: "AiConversationQueryActivityToolCall" } & Pick<
   AiConversationQueryActivityToolCall,
@@ -36632,6 +37071,35 @@ export type AiConversationRetrieveEntitiesToolCallArgsFragment = {
   >;
 };
 
+export type AiConversationRetryPullRequestCheckToolCallFragment = {
+  __typename: "AiConversationRetryPullRequestCheckToolCall";
+} & Pick<AiConversationRetryPullRequestCheckToolCall, "rawArgs" | "name" | "rawResult"> & {
+    args?: Maybe<
+      { __typename: "AiConversationRetryPullRequestCheckToolCallArgs" } & Pick<
+        AiConversationRetryPullRequestCheckToolCallArgs,
+        "checkName" | "workflowName"
+      > & {
+          entity: { __typename: "AiConversationSearchEntitiesToolCallResultEntities" } & Pick<
+            AiConversationSearchEntitiesToolCallResultEntities,
+            "id" | "type"
+          >;
+        }
+    >;
+    displayInfo: { __typename: "AiConversationToolDisplayInfo" } & Pick<
+      AiConversationToolDisplayInfo,
+      "activeLabel" | "detail" | "icon" | "inactiveLabel" | "result"
+    >;
+  };
+
+export type AiConversationRetryPullRequestCheckToolCallArgsFragment = {
+  __typename: "AiConversationRetryPullRequestCheckToolCallArgs";
+} & Pick<AiConversationRetryPullRequestCheckToolCallArgs, "checkName" | "workflowName"> & {
+    entity: { __typename: "AiConversationSearchEntitiesToolCallResultEntities" } & Pick<
+      AiConversationSearchEntitiesToolCallResultEntities,
+      "id" | "type"
+    >;
+  };
+
 export type AiConversationSearchDocumentationToolCallFragment = {
   __typename: "AiConversationSearchDocumentationToolCall";
 } & Pick<AiConversationSearchDocumentationToolCall, "rawArgs" | "name" | "rawResult"> & {
@@ -36685,6 +37153,25 @@ export type AiConversationSearchEntitiesToolCallResultEntitiesFragment = {
   __typename: "AiConversationSearchEntitiesToolCallResultEntities";
 } & Pick<AiConversationSearchEntitiesToolCallResultEntities, "id" | "type">;
 
+export type AiConversationSubscribeToEventToolCallFragment = {
+  __typename: "AiConversationSubscribeToEventToolCall";
+} & Pick<AiConversationSubscribeToEventToolCall, "rawArgs" | "name" | "rawResult"> & {
+    args?: Maybe<
+      { __typename: "AiConversationSubscribeToEventToolCallArgs" } & Pick<
+        AiConversationSubscribeToEventToolCallArgs,
+        "endsAt" | "kind" | "message" | "subscriptionId" | "type"
+      >
+    >;
+    displayInfo: { __typename: "AiConversationToolDisplayInfo" } & Pick<
+      AiConversationToolDisplayInfo,
+      "activeLabel" | "detail" | "icon" | "inactiveLabel" | "result"
+    >;
+  };
+
+export type AiConversationSubscribeToEventToolCallArgsFragment = {
+  __typename: "AiConversationSubscribeToEventToolCallArgs";
+} & Pick<AiConversationSubscribeToEventToolCallArgs, "endsAt" | "kind" | "message" | "subscriptionId" | "type">;
+
 export type AiConversationSuggestValuesToolCallFragment = { __typename: "AiConversationSuggestValuesToolCall" } & Pick<
   AiConversationSuggestValuesToolCall,
   "rawArgs" | "name" | "rawResult"
@@ -36727,6 +37214,25 @@ export type AiConversationTranscribeVideoToolCallFragment = {
       "activeLabel" | "detail" | "icon" | "inactiveLabel" | "result"
     >;
   };
+
+export type AiConversationUnsubscribeFromEventToolCallFragment = {
+  __typename: "AiConversationUnsubscribeFromEventToolCall";
+} & Pick<AiConversationUnsubscribeFromEventToolCall, "rawArgs" | "name" | "rawResult"> & {
+    args?: Maybe<
+      { __typename: "AiConversationUnsubscribeFromEventToolCallArgs" } & Pick<
+        AiConversationUnsubscribeFromEventToolCallArgs,
+        "message" | "subscriptionId"
+      >
+    >;
+    displayInfo: { __typename: "AiConversationToolDisplayInfo" } & Pick<
+      AiConversationToolDisplayInfo,
+      "activeLabel" | "detail" | "icon" | "inactiveLabel" | "result"
+    >;
+  };
+
+export type AiConversationUnsubscribeFromEventToolCallArgsFragment = {
+  __typename: "AiConversationUnsubscribeFromEventToolCallArgs";
+} & Pick<AiConversationUnsubscribeFromEventToolCallArgs, "message" | "subscriptionId">;
 
 export type AiConversationUpdateEntityToolCallFragment = { __typename: "AiConversationUpdateEntityToolCall" } & Pick<
   AiConversationUpdateEntityToolCall,
@@ -37160,6 +37666,7 @@ export type CustomViewConnectionFragment = { __typename: "CustomViewConnection" 
             | "issueSubGroupingLabelGroupId"
             | "projectGroupingLabelGroupId"
             | "projectSubGroupingLabelGroupId"
+            | "groupOrderingMode"
             | "projectGroupOrdering"
             | "projectCustomerNeedsViewGrouping"
             | "projectCustomerNeedsViewOrdering"
@@ -37388,6 +37895,7 @@ export type CustomViewConnectionFragment = { __typename: "CustomViewConnection" 
                 | "issueSubGroupingLabelGroupId"
                 | "projectGroupingLabelGroupId"
                 | "projectSubGroupingLabelGroupId"
+                | "groupOrderingMode"
                 | "projectGroupOrdering"
                 | "projectCustomerNeedsViewGrouping"
                 | "projectCustomerNeedsViewOrdering"
@@ -37621,6 +38129,7 @@ export type CustomViewConnectionFragment = { __typename: "CustomViewConnection" 
                 | "issueSubGroupingLabelGroupId"
                 | "projectGroupingLabelGroupId"
                 | "projectSubGroupingLabelGroupId"
+                | "groupOrderingMode"
                 | "projectGroupOrdering"
                 | "projectCustomerNeedsViewGrouping"
                 | "projectCustomerNeedsViewOrdering"
@@ -46387,6 +46896,7 @@ export type CustomViewQuery = { __typename?: "Query" } & {
           | "issueSubGroupingLabelGroupId"
           | "projectGroupingLabelGroupId"
           | "projectSubGroupingLabelGroupId"
+          | "groupOrderingMode"
           | "projectGroupOrdering"
           | "projectCustomerNeedsViewGrouping"
           | "projectCustomerNeedsViewOrdering"
@@ -46615,6 +47125,7 @@ export type CustomViewQuery = { __typename?: "Query" } & {
               | "issueSubGroupingLabelGroupId"
               | "projectGroupingLabelGroupId"
               | "projectSubGroupingLabelGroupId"
+              | "groupOrderingMode"
               | "projectGroupOrdering"
               | "projectCustomerNeedsViewGrouping"
               | "projectCustomerNeedsViewOrdering"
@@ -46848,6 +47359,7 @@ export type CustomViewQuery = { __typename?: "Query" } & {
               | "issueSubGroupingLabelGroupId"
               | "projectGroupingLabelGroupId"
               | "projectSubGroupingLabelGroupId"
+              | "groupOrderingMode"
               | "projectGroupOrdering"
               | "projectCustomerNeedsViewGrouping"
               | "projectCustomerNeedsViewOrdering"
@@ -47335,6 +47847,7 @@ export type CustomView_OrganizationViewPreferencesQuery = { __typename?: "Query"
             | "issueSubGroupingLabelGroupId"
             | "projectGroupingLabelGroupId"
             | "projectSubGroupingLabelGroupId"
+            | "groupOrderingMode"
             | "projectGroupOrdering"
             | "projectCustomerNeedsViewGrouping"
             | "projectCustomerNeedsViewOrdering"
@@ -47570,6 +48083,7 @@ export type CustomView_OrganizationViewPreferences_PreferencesQuery = { __typena
           | "issueSubGroupingLabelGroupId"
           | "projectGroupingLabelGroupId"
           | "projectSubGroupingLabelGroupId"
+          | "groupOrderingMode"
           | "projectGroupOrdering"
           | "projectCustomerNeedsViewGrouping"
           | "projectCustomerNeedsViewOrdering"
@@ -47934,6 +48448,7 @@ export type CustomView_UserViewPreferencesQuery = { __typename?: "Query" } & {
             | "issueSubGroupingLabelGroupId"
             | "projectGroupingLabelGroupId"
             | "projectSubGroupingLabelGroupId"
+            | "groupOrderingMode"
             | "projectGroupOrdering"
             | "projectCustomerNeedsViewGrouping"
             | "projectCustomerNeedsViewOrdering"
@@ -48169,6 +48684,7 @@ export type CustomView_UserViewPreferences_PreferencesQuery = { __typename?: "Qu
           | "issueSubGroupingLabelGroupId"
           | "projectGroupingLabelGroupId"
           | "projectSubGroupingLabelGroupId"
+          | "groupOrderingMode"
           | "projectGroupOrdering"
           | "projectCustomerNeedsViewGrouping"
           | "projectCustomerNeedsViewOrdering"
@@ -48403,6 +48919,7 @@ export type CustomView_ViewPreferencesValuesQuery = { __typename?: "Query" } & {
         | "issueSubGroupingLabelGroupId"
         | "projectGroupingLabelGroupId"
         | "projectSubGroupingLabelGroupId"
+        | "groupOrderingMode"
         | "projectGroupOrdering"
         | "projectCustomerNeedsViewGrouping"
         | "projectCustomerNeedsViewOrdering"
@@ -48674,6 +49191,7 @@ export type CustomViewsQuery = { __typename?: "Query" } & {
               | "issueSubGroupingLabelGroupId"
               | "projectGroupingLabelGroupId"
               | "projectSubGroupingLabelGroupId"
+              | "groupOrderingMode"
               | "projectGroupOrdering"
               | "projectCustomerNeedsViewGrouping"
               | "projectCustomerNeedsViewOrdering"
@@ -48902,6 +49420,7 @@ export type CustomViewsQuery = { __typename?: "Query" } & {
                   | "issueSubGroupingLabelGroupId"
                   | "projectGroupingLabelGroupId"
                   | "projectSubGroupingLabelGroupId"
+                  | "groupOrderingMode"
                   | "projectGroupOrdering"
                   | "projectCustomerNeedsViewGrouping"
                   | "projectCustomerNeedsViewOrdering"
@@ -49135,6 +49654,7 @@ export type CustomViewsQuery = { __typename?: "Query" } & {
                   | "issueSubGroupingLabelGroupId"
                   | "projectGroupingLabelGroupId"
                   | "projectSubGroupingLabelGroupId"
+                  | "groupOrderingMode"
                   | "projectGroupOrdering"
                   | "projectCustomerNeedsViewGrouping"
                   | "projectCustomerNeedsViewOrdering"
@@ -70813,6 +71333,7 @@ export type CreateViewPreferencesMutation = { __typename?: "Mutation" } & {
             | "issueSubGroupingLabelGroupId"
             | "projectGroupingLabelGroupId"
             | "projectSubGroupingLabelGroupId"
+            | "groupOrderingMode"
             | "projectGroupOrdering"
             | "projectCustomerNeedsViewGrouping"
             | "projectCustomerNeedsViewOrdering"
@@ -71061,6 +71582,7 @@ export type UpdateViewPreferencesMutation = { __typename?: "Mutation" } & {
             | "issueSubGroupingLabelGroupId"
             | "projectGroupingLabelGroupId"
             | "projectSubGroupingLabelGroupId"
+            | "groupOrderingMode"
             | "projectGroupOrdering"
             | "projectCustomerNeedsViewGrouping"
             | "projectCustomerNeedsViewOrdering"
@@ -71351,6 +71873,30 @@ export const AiConversationPartMetadataFragmentDoc = new TypedDocumentString(
     `,
   { fragmentName: "AiConversationPartMetadata" }
 ) as unknown as TypedDocumentString<AiConversationPartMetadataFragment, unknown>;
+export const AiConversationEventPartFragmentDoc = new TypedDocumentString(
+  `
+    fragment AiConversationEventPart on AiConversationEventPart {
+  __typename
+  id
+  subscriptionId
+  body
+  bodyData
+  metadata {
+    ...AiConversationPartMetadata
+  }
+  type
+}
+    fragment AiConversationPartMetadata on AiConversationPartMetadata {
+  __typename
+  feedback
+  evalLogId
+  phase
+  endedAt
+  startedAt
+  turnId
+}`,
+  { fragmentName: "AiConversationEventPart" }
+) as unknown as TypedDocumentString<AiConversationEventPartFragment, unknown>;
 export const AiConversationPromptPartFragmentDoc = new TypedDocumentString(
   `
     fragment AiConversationPromptPart on AiConversationPromptPart {
@@ -71594,6 +72140,60 @@ export const AiConversationGetMicrosoftTeamsConversationHistoryToolCallFragmentD
 }`,
   { fragmentName: "AiConversationGetMicrosoftTeamsConversationHistoryToolCall" }
 ) as unknown as TypedDocumentString<AiConversationGetMicrosoftTeamsConversationHistoryToolCallFragment, unknown>;
+export const AiConversationGetPullRequestCheckLogsToolCallArgsFragmentDoc = new TypedDocumentString(
+  `
+    fragment AiConversationGetPullRequestCheckLogsToolCallArgs on AiConversationGetPullRequestCheckLogsToolCallArgs {
+  __typename
+  checkName
+  entity {
+    ...AiConversationSearchEntitiesToolCallResultEntities
+  }
+  workflowName
+}
+    fragment AiConversationSearchEntitiesToolCallResultEntities on AiConversationSearchEntitiesToolCallResultEntities {
+  __typename
+  id
+  type
+}`,
+  { fragmentName: "AiConversationGetPullRequestCheckLogsToolCallArgs" }
+) as unknown as TypedDocumentString<AiConversationGetPullRequestCheckLogsToolCallArgsFragment, unknown>;
+export const AiConversationGetPullRequestCheckLogsToolCallFragmentDoc = new TypedDocumentString(
+  `
+    fragment AiConversationGetPullRequestCheckLogsToolCall on AiConversationGetPullRequestCheckLogsToolCall {
+  __typename
+  rawArgs
+  args {
+    ...AiConversationGetPullRequestCheckLogsToolCallArgs
+  }
+  name
+  rawResult
+  displayInfo {
+    ...AiConversationToolDisplayInfo
+  }
+}
+    fragment AiConversationGetPullRequestCheckLogsToolCallArgs on AiConversationGetPullRequestCheckLogsToolCallArgs {
+  __typename
+  checkName
+  entity {
+    ...AiConversationSearchEntitiesToolCallResultEntities
+  }
+  workflowName
+}
+fragment AiConversationSearchEntitiesToolCallResultEntities on AiConversationSearchEntitiesToolCallResultEntities {
+  __typename
+  id
+  type
+}
+fragment AiConversationToolDisplayInfo on AiConversationToolDisplayInfo {
+  __typename
+  activeLabel
+  detail
+  icon
+  inactiveLabel
+  result
+}`,
+  { fragmentName: "AiConversationGetPullRequestCheckLogsToolCall" }
+) as unknown as TypedDocumentString<AiConversationGetPullRequestCheckLogsToolCallFragment, unknown>;
 export const AiConversationGetPullRequestDiffToolCallArgsFragmentDoc = new TypedDocumentString(
   `
     fragment AiConversationGetPullRequestDiffToolCallArgs on AiConversationGetPullRequestDiffToolCallArgs {
@@ -71858,22 +72458,36 @@ fragment AiConversationToolDisplayInfo on AiConversationToolDisplayInfo {
 }`,
   { fragmentName: "AiConversationInvokeMcpToolToolCall" }
 ) as unknown as TypedDocumentString<AiConversationInvokeMcpToolToolCallFragment, unknown>;
+export const AiConversationNavigateToPageToolCallArgsEntitiesFragmentDoc = new TypedDocumentString(
+  `
+    fragment AiConversationNavigateToPageToolCallArgsEntities on AiConversationNavigateToPageToolCallArgsEntities {
+  __typename
+  entityType
+  uuid
+}
+    `,
+  { fragmentName: "AiConversationNavigateToPageToolCallArgsEntities" }
+) as unknown as TypedDocumentString<AiConversationNavigateToPageToolCallArgsEntitiesFragment, unknown>;
 export const AiConversationNavigateToPageToolCallArgsFragmentDoc = new TypedDocumentString(
   `
     fragment AiConversationNavigateToPageToolCallArgs on AiConversationNavigateToPageToolCallArgs {
   __typename
-  entityType
-  identifier
+  entities {
+    ...AiConversationNavigateToPageToolCallArgsEntities
+  }
 }
-    `,
+    fragment AiConversationNavigateToPageToolCallArgsEntities on AiConversationNavigateToPageToolCallArgsEntities {
+  __typename
+  entityType
+  uuid
+}`,
   { fragmentName: "AiConversationNavigateToPageToolCallArgs" }
 ) as unknown as TypedDocumentString<AiConversationNavigateToPageToolCallArgsFragment, unknown>;
 export const AiConversationNavigateToPageToolCallResultFragmentDoc = new TypedDocumentString(
   `
     fragment AiConversationNavigateToPageToolCallResult on AiConversationNavigateToPageToolCallResult {
   __typename
-  newTab
-  url
+  urls
 }
     `,
   { fragmentName: "AiConversationNavigateToPageToolCallResult" }
@@ -71897,13 +72511,18 @@ export const AiConversationNavigateToPageToolCallFragmentDoc = new TypedDocument
 }
     fragment AiConversationNavigateToPageToolCallArgs on AiConversationNavigateToPageToolCallArgs {
   __typename
+  entities {
+    ...AiConversationNavigateToPageToolCallArgsEntities
+  }
+}
+fragment AiConversationNavigateToPageToolCallArgsEntities on AiConversationNavigateToPageToolCallArgsEntities {
+  __typename
   entityType
-  identifier
+  uuid
 }
 fragment AiConversationNavigateToPageToolCallResult on AiConversationNavigateToPageToolCallResult {
   __typename
-  newTab
-  url
+  urls
 }
 fragment AiConversationToolDisplayInfo on AiConversationToolDisplayInfo {
   __typename
@@ -72274,6 +72893,60 @@ fragment AiConversationToolDisplayInfo on AiConversationToolDisplayInfo {
 }`,
   { fragmentName: "AiConversationRetrieveEntitiesToolCall" }
 ) as unknown as TypedDocumentString<AiConversationRetrieveEntitiesToolCallFragment, unknown>;
+export const AiConversationRetryPullRequestCheckToolCallArgsFragmentDoc = new TypedDocumentString(
+  `
+    fragment AiConversationRetryPullRequestCheckToolCallArgs on AiConversationRetryPullRequestCheckToolCallArgs {
+  __typename
+  checkName
+  entity {
+    ...AiConversationSearchEntitiesToolCallResultEntities
+  }
+  workflowName
+}
+    fragment AiConversationSearchEntitiesToolCallResultEntities on AiConversationSearchEntitiesToolCallResultEntities {
+  __typename
+  id
+  type
+}`,
+  { fragmentName: "AiConversationRetryPullRequestCheckToolCallArgs" }
+) as unknown as TypedDocumentString<AiConversationRetryPullRequestCheckToolCallArgsFragment, unknown>;
+export const AiConversationRetryPullRequestCheckToolCallFragmentDoc = new TypedDocumentString(
+  `
+    fragment AiConversationRetryPullRequestCheckToolCall on AiConversationRetryPullRequestCheckToolCall {
+  __typename
+  rawArgs
+  args {
+    ...AiConversationRetryPullRequestCheckToolCallArgs
+  }
+  name
+  rawResult
+  displayInfo {
+    ...AiConversationToolDisplayInfo
+  }
+}
+    fragment AiConversationRetryPullRequestCheckToolCallArgs on AiConversationRetryPullRequestCheckToolCallArgs {
+  __typename
+  checkName
+  entity {
+    ...AiConversationSearchEntitiesToolCallResultEntities
+  }
+  workflowName
+}
+fragment AiConversationSearchEntitiesToolCallResultEntities on AiConversationSearchEntitiesToolCallResultEntities {
+  __typename
+  id
+  type
+}
+fragment AiConversationToolDisplayInfo on AiConversationToolDisplayInfo {
+  __typename
+  activeLabel
+  detail
+  icon
+  inactiveLabel
+  result
+}`,
+  { fragmentName: "AiConversationRetryPullRequestCheckToolCall" }
+) as unknown as TypedDocumentString<AiConversationRetryPullRequestCheckToolCallFragment, unknown>;
 export const AiConversationSearchDocumentationToolCallFragmentDoc = new TypedDocumentString(
   `
     fragment AiConversationSearchDocumentationToolCall on AiConversationSearchDocumentationToolCall {
@@ -72363,6 +73036,51 @@ fragment AiConversationToolDisplayInfo on AiConversationToolDisplayInfo {
 }`,
   { fragmentName: "AiConversationSearchEntitiesToolCall" }
 ) as unknown as TypedDocumentString<AiConversationSearchEntitiesToolCallFragment, unknown>;
+export const AiConversationSubscribeToEventToolCallArgsFragmentDoc = new TypedDocumentString(
+  `
+    fragment AiConversationSubscribeToEventToolCallArgs on AiConversationSubscribeToEventToolCallArgs {
+  __typename
+  endsAt
+  kind
+  message
+  subscriptionId
+  type
+}
+    `,
+  { fragmentName: "AiConversationSubscribeToEventToolCallArgs" }
+) as unknown as TypedDocumentString<AiConversationSubscribeToEventToolCallArgsFragment, unknown>;
+export const AiConversationSubscribeToEventToolCallFragmentDoc = new TypedDocumentString(
+  `
+    fragment AiConversationSubscribeToEventToolCall on AiConversationSubscribeToEventToolCall {
+  __typename
+  rawArgs
+  args {
+    ...AiConversationSubscribeToEventToolCallArgs
+  }
+  name
+  rawResult
+  displayInfo {
+    ...AiConversationToolDisplayInfo
+  }
+}
+    fragment AiConversationSubscribeToEventToolCallArgs on AiConversationSubscribeToEventToolCallArgs {
+  __typename
+  endsAt
+  kind
+  message
+  subscriptionId
+  type
+}
+fragment AiConversationToolDisplayInfo on AiConversationToolDisplayInfo {
+  __typename
+  activeLabel
+  detail
+  icon
+  inactiveLabel
+  result
+}`,
+  { fragmentName: "AiConversationSubscribeToEventToolCall" }
+) as unknown as TypedDocumentString<AiConversationSubscribeToEventToolCallFragment, unknown>;
 export const AiConversationSuggestValuesToolCallArgsFragmentDoc = new TypedDocumentString(
   `
     fragment AiConversationSuggestValuesToolCallArgs on AiConversationSuggestValuesToolCallArgs {
@@ -72444,6 +73162,45 @@ export const AiConversationTranscribeVideoToolCallFragmentDoc = new TypedDocumen
 }`,
   { fragmentName: "AiConversationTranscribeVideoToolCall" }
 ) as unknown as TypedDocumentString<AiConversationTranscribeVideoToolCallFragment, unknown>;
+export const AiConversationUnsubscribeFromEventToolCallArgsFragmentDoc = new TypedDocumentString(
+  `
+    fragment AiConversationUnsubscribeFromEventToolCallArgs on AiConversationUnsubscribeFromEventToolCallArgs {
+  __typename
+  message
+  subscriptionId
+}
+    `,
+  { fragmentName: "AiConversationUnsubscribeFromEventToolCallArgs" }
+) as unknown as TypedDocumentString<AiConversationUnsubscribeFromEventToolCallArgsFragment, unknown>;
+export const AiConversationUnsubscribeFromEventToolCallFragmentDoc = new TypedDocumentString(
+  `
+    fragment AiConversationUnsubscribeFromEventToolCall on AiConversationUnsubscribeFromEventToolCall {
+  __typename
+  rawArgs
+  args {
+    ...AiConversationUnsubscribeFromEventToolCallArgs
+  }
+  name
+  rawResult
+  displayInfo {
+    ...AiConversationToolDisplayInfo
+  }
+}
+    fragment AiConversationToolDisplayInfo on AiConversationToolDisplayInfo {
+  __typename
+  activeLabel
+  detail
+  icon
+  inactiveLabel
+  result
+}
+fragment AiConversationUnsubscribeFromEventToolCallArgs on AiConversationUnsubscribeFromEventToolCallArgs {
+  __typename
+  message
+  subscriptionId
+}`,
+  { fragmentName: "AiConversationUnsubscribeFromEventToolCall" }
+) as unknown as TypedDocumentString<AiConversationUnsubscribeFromEventToolCallFragment, unknown>;
 export const AiConversationUpdateEntityToolCallArgsFragmentDoc = new TypedDocumentString(
   `
     fragment AiConversationUpdateEntityToolCallArgs on AiConversationUpdateEntityToolCallArgs {
@@ -72560,6 +73317,9 @@ export const AiConversationToolCallPartFragmentDoc = new TypedDocumentString(
     ... on AiConversationGetMicrosoftTeamsConversationHistoryToolCall {
       ...AiConversationGetMicrosoftTeamsConversationHistoryToolCall
     }
+    ... on AiConversationGetPullRequestCheckLogsToolCall {
+      ...AiConversationGetPullRequestCheckLogsToolCall
+    }
     ... on AiConversationGetPullRequestDiffToolCall {
       ...AiConversationGetPullRequestDiffToolCall
     }
@@ -72596,11 +73356,17 @@ export const AiConversationToolCallPartFragmentDoc = new TypedDocumentString(
     ... on AiConversationRetrieveEntitiesToolCall {
       ...AiConversationRetrieveEntitiesToolCall
     }
+    ... on AiConversationRetryPullRequestCheckToolCall {
+      ...AiConversationRetryPullRequestCheckToolCall
+    }
     ... on AiConversationSearchDocumentationToolCall {
       ...AiConversationSearchDocumentationToolCall
     }
     ... on AiConversationSearchEntitiesToolCall {
       ...AiConversationSearchEntitiesToolCall
+    }
+    ... on AiConversationSubscribeToEventToolCall {
+      ...AiConversationSubscribeToEventToolCall
     }
     ... on AiConversationSuggestValuesToolCall {
       ...AiConversationSuggestValuesToolCall
@@ -72610,6 +73376,9 @@ export const AiConversationToolCallPartFragmentDoc = new TypedDocumentString(
     }
     ... on AiConversationTranscribeVideoToolCall {
       ...AiConversationTranscribeVideoToolCall
+    }
+    ... on AiConversationUnsubscribeFromEventToolCall {
+      ...AiConversationUnsubscribeFromEventToolCall
     }
     ... on AiConversationUpdateEntityToolCall {
       ...AiConversationUpdateEntityToolCall
@@ -72688,6 +73457,26 @@ fragment AiConversationGetMicrosoftTeamsConversationHistoryToolCall on AiConvers
   displayInfo {
     ...AiConversationToolDisplayInfo
   }
+}
+fragment AiConversationGetPullRequestCheckLogsToolCall on AiConversationGetPullRequestCheckLogsToolCall {
+  __typename
+  rawArgs
+  args {
+    ...AiConversationGetPullRequestCheckLogsToolCallArgs
+  }
+  name
+  rawResult
+  displayInfo {
+    ...AiConversationToolDisplayInfo
+  }
+}
+fragment AiConversationGetPullRequestCheckLogsToolCallArgs on AiConversationGetPullRequestCheckLogsToolCallArgs {
+  __typename
+  checkName
+  entity {
+    ...AiConversationSearchEntitiesToolCallResultEntities
+  }
+  workflowName
 }
 fragment AiConversationGetPullRequestDiffToolCall on AiConversationGetPullRequestDiffToolCall {
   __typename
@@ -72803,13 +73592,18 @@ fragment AiConversationNavigateToPageToolCall on AiConversationNavigateToPageToo
 }
 fragment AiConversationNavigateToPageToolCallArgs on AiConversationNavigateToPageToolCallArgs {
   __typename
+  entities {
+    ...AiConversationNavigateToPageToolCallArgsEntities
+  }
+}
+fragment AiConversationNavigateToPageToolCallArgsEntities on AiConversationNavigateToPageToolCallArgsEntities {
+  __typename
   entityType
-  identifier
+  uuid
 }
 fragment AiConversationNavigateToPageToolCallResult on AiConversationNavigateToPageToolCallResult {
   __typename
-  newTab
-  url
+  urls
 }
 fragment AiConversationQueryActivityToolCall on AiConversationQueryActivityToolCall {
   __typename
@@ -72939,6 +73733,26 @@ fragment AiConversationRetrieveEntitiesToolCallArgs on AiConversationRetrieveEnt
     ...AiConversationSearchEntitiesToolCallResultEntities
   }
 }
+fragment AiConversationRetryPullRequestCheckToolCall on AiConversationRetryPullRequestCheckToolCall {
+  __typename
+  rawArgs
+  args {
+    ...AiConversationRetryPullRequestCheckToolCallArgs
+  }
+  name
+  rawResult
+  displayInfo {
+    ...AiConversationToolDisplayInfo
+  }
+}
+fragment AiConversationRetryPullRequestCheckToolCallArgs on AiConversationRetryPullRequestCheckToolCallArgs {
+  __typename
+  checkName
+  entity {
+    ...AiConversationSearchEntitiesToolCallResultEntities
+  }
+  workflowName
+}
 fragment AiConversationSearchDocumentationToolCall on AiConversationSearchDocumentationToolCall {
   __typename
   rawArgs
@@ -72977,6 +73791,26 @@ fragment AiConversationSearchEntitiesToolCallResult on AiConversationSearchEntit
 fragment AiConversationSearchEntitiesToolCallResultEntities on AiConversationSearchEntitiesToolCallResultEntities {
   __typename
   id
+  type
+}
+fragment AiConversationSubscribeToEventToolCall on AiConversationSubscribeToEventToolCall {
+  __typename
+  rawArgs
+  args {
+    ...AiConversationSubscribeToEventToolCallArgs
+  }
+  name
+  rawResult
+  displayInfo {
+    ...AiConversationToolDisplayInfo
+  }
+}
+fragment AiConversationSubscribeToEventToolCallArgs on AiConversationSubscribeToEventToolCallArgs {
+  __typename
+  endsAt
+  kind
+  message
+  subscriptionId
   type
 }
 fragment AiConversationSuggestValuesToolCall on AiConversationSuggestValuesToolCall {
@@ -73021,6 +73855,23 @@ fragment AiConversationTranscribeVideoToolCall on AiConversationTranscribeVideoT
   displayInfo {
     ...AiConversationToolDisplayInfo
   }
+}
+fragment AiConversationUnsubscribeFromEventToolCall on AiConversationUnsubscribeFromEventToolCall {
+  __typename
+  rawArgs
+  args {
+    ...AiConversationUnsubscribeFromEventToolCallArgs
+  }
+  name
+  rawResult
+  displayInfo {
+    ...AiConversationToolDisplayInfo
+  }
+}
+fragment AiConversationUnsubscribeFromEventToolCallArgs on AiConversationUnsubscribeFromEventToolCallArgs {
+  __typename
+  message
+  subscriptionId
 }
 fragment AiConversationUpdateEntityToolCall on AiConversationUpdateEntityToolCall {
   __typename
@@ -73253,6 +74104,9 @@ export const AiConversationBasePartFragmentDoc = new TypedDocumentString(
     ...AiConversationPartMetadata
   }
   type
+  ... on AiConversationEventPart {
+    ...AiConversationEventPart
+  }
   ... on AiConversationPromptPart {
     ...AiConversationPromptPart
   }
@@ -73322,6 +74176,9 @@ fragment AiConversationToolCallPart on AiConversationToolCallPart {
     ... on AiConversationGetMicrosoftTeamsConversationHistoryToolCall {
       ...AiConversationGetMicrosoftTeamsConversationHistoryToolCall
     }
+    ... on AiConversationGetPullRequestCheckLogsToolCall {
+      ...AiConversationGetPullRequestCheckLogsToolCall
+    }
     ... on AiConversationGetPullRequestDiffToolCall {
       ...AiConversationGetPullRequestDiffToolCall
     }
@@ -73358,11 +74215,17 @@ fragment AiConversationToolCallPart on AiConversationToolCallPart {
     ... on AiConversationRetrieveEntitiesToolCall {
       ...AiConversationRetrieveEntitiesToolCall
     }
+    ... on AiConversationRetryPullRequestCheckToolCall {
+      ...AiConversationRetryPullRequestCheckToolCall
+    }
     ... on AiConversationSearchDocumentationToolCall {
       ...AiConversationSearchDocumentationToolCall
     }
     ... on AiConversationSearchEntitiesToolCall {
       ...AiConversationSearchEntitiesToolCall
+    }
+    ... on AiConversationSubscribeToEventToolCall {
+      ...AiConversationSubscribeToEventToolCall
     }
     ... on AiConversationSuggestValuesToolCall {
       ...AiConversationSuggestValuesToolCall
@@ -73372,6 +74235,9 @@ fragment AiConversationToolCallPart on AiConversationToolCallPart {
     }
     ... on AiConversationTranscribeVideoToolCall {
       ...AiConversationTranscribeVideoToolCall
+    }
+    ... on AiConversationUnsubscribeFromEventToolCall {
+      ...AiConversationUnsubscribeFromEventToolCall
     }
     ... on AiConversationUpdateEntityToolCall {
       ...AiConversationUpdateEntityToolCall
@@ -73397,6 +74263,17 @@ fragment AiConversationWidgetPart on AiConversationWidgetPart {
       ...AiConversationEntityListWidget
     }
   }
+}
+fragment AiConversationEventPart on AiConversationEventPart {
+  __typename
+  id
+  subscriptionId
+  body
+  bodyData
+  metadata {
+    ...AiConversationPartMetadata
+  }
+  type
 }
 fragment AiConversationPartMetadata on AiConversationPartMetadata {
   __typename
@@ -73507,6 +74384,26 @@ fragment AiConversationGetMicrosoftTeamsConversationHistoryToolCall on AiConvers
   displayInfo {
     ...AiConversationToolDisplayInfo
   }
+}
+fragment AiConversationGetPullRequestCheckLogsToolCall on AiConversationGetPullRequestCheckLogsToolCall {
+  __typename
+  rawArgs
+  args {
+    ...AiConversationGetPullRequestCheckLogsToolCallArgs
+  }
+  name
+  rawResult
+  displayInfo {
+    ...AiConversationToolDisplayInfo
+  }
+}
+fragment AiConversationGetPullRequestCheckLogsToolCallArgs on AiConversationGetPullRequestCheckLogsToolCallArgs {
+  __typename
+  checkName
+  entity {
+    ...AiConversationSearchEntitiesToolCallResultEntities
+  }
+  workflowName
 }
 fragment AiConversationGetPullRequestDiffToolCall on AiConversationGetPullRequestDiffToolCall {
   __typename
@@ -73622,13 +74519,18 @@ fragment AiConversationNavigateToPageToolCall on AiConversationNavigateToPageToo
 }
 fragment AiConversationNavigateToPageToolCallArgs on AiConversationNavigateToPageToolCallArgs {
   __typename
+  entities {
+    ...AiConversationNavigateToPageToolCallArgsEntities
+  }
+}
+fragment AiConversationNavigateToPageToolCallArgsEntities on AiConversationNavigateToPageToolCallArgsEntities {
+  __typename
   entityType
-  identifier
+  uuid
 }
 fragment AiConversationNavigateToPageToolCallResult on AiConversationNavigateToPageToolCallResult {
   __typename
-  newTab
-  url
+  urls
 }
 fragment AiConversationQueryActivityToolCall on AiConversationQueryActivityToolCall {
   __typename
@@ -73758,6 +74660,26 @@ fragment AiConversationRetrieveEntitiesToolCallArgs on AiConversationRetrieveEnt
     ...AiConversationSearchEntitiesToolCallResultEntities
   }
 }
+fragment AiConversationRetryPullRequestCheckToolCall on AiConversationRetryPullRequestCheckToolCall {
+  __typename
+  rawArgs
+  args {
+    ...AiConversationRetryPullRequestCheckToolCallArgs
+  }
+  name
+  rawResult
+  displayInfo {
+    ...AiConversationToolDisplayInfo
+  }
+}
+fragment AiConversationRetryPullRequestCheckToolCallArgs on AiConversationRetryPullRequestCheckToolCallArgs {
+  __typename
+  checkName
+  entity {
+    ...AiConversationSearchEntitiesToolCallResultEntities
+  }
+  workflowName
+}
 fragment AiConversationSearchDocumentationToolCall on AiConversationSearchDocumentationToolCall {
   __typename
   rawArgs
@@ -73796,6 +74718,26 @@ fragment AiConversationSearchEntitiesToolCallResult on AiConversationSearchEntit
 fragment AiConversationSearchEntitiesToolCallResultEntities on AiConversationSearchEntitiesToolCallResultEntities {
   __typename
   id
+  type
+}
+fragment AiConversationSubscribeToEventToolCall on AiConversationSubscribeToEventToolCall {
+  __typename
+  rawArgs
+  args {
+    ...AiConversationSubscribeToEventToolCallArgs
+  }
+  name
+  rawResult
+  displayInfo {
+    ...AiConversationToolDisplayInfo
+  }
+}
+fragment AiConversationSubscribeToEventToolCallArgs on AiConversationSubscribeToEventToolCallArgs {
+  __typename
+  endsAt
+  kind
+  message
+  subscriptionId
   type
 }
 fragment AiConversationSuggestValuesToolCall on AiConversationSuggestValuesToolCall {
@@ -73840,6 +74782,23 @@ fragment AiConversationTranscribeVideoToolCall on AiConversationTranscribeVideoT
   displayInfo {
     ...AiConversationToolDisplayInfo
   }
+}
+fragment AiConversationUnsubscribeFromEventToolCall on AiConversationUnsubscribeFromEventToolCall {
+  __typename
+  rawArgs
+  args {
+    ...AiConversationUnsubscribeFromEventToolCallArgs
+  }
+  name
+  rawResult
+  displayInfo {
+    ...AiConversationToolDisplayInfo
+  }
+}
+fragment AiConversationUnsubscribeFromEventToolCallArgs on AiConversationUnsubscribeFromEventToolCallArgs {
+  __typename
+  message
+  subscriptionId
 }
 fragment AiConversationUpdateEntityToolCall on AiConversationUpdateEntityToolCall {
   __typename
@@ -82859,6 +83818,7 @@ export const ViewPreferencesValuesFragmentDoc = new TypedDocumentString(
   issueSubGroupingLabelGroupId
   projectGroupingLabelGroupId
   projectSubGroupingLabelGroupId
+  groupOrderingMode
   projectGroupOrdering
   projectCustomerNeedsViewGrouping
   projectCustomerNeedsViewOrdering
@@ -83101,6 +84061,7 @@ fragment ViewPreferencesValues on ViewPreferencesValues {
   issueSubGroupingLabelGroupId
   projectGroupingLabelGroupId
   projectSubGroupingLabelGroupId
+  groupOrderingMode
   projectGroupOrdering
   projectCustomerNeedsViewGrouping
   projectCustomerNeedsViewOrdering
@@ -83334,6 +84295,7 @@ fragment ViewPreferencesValues on ViewPreferencesValues {
   issueSubGroupingLabelGroupId
   projectGroupingLabelGroupId
   projectSubGroupingLabelGroupId
+  groupOrderingMode
   projectGroupOrdering
   projectCustomerNeedsViewGrouping
   projectCustomerNeedsViewOrdering
@@ -84417,6 +85379,9 @@ export const AiConversationBaseToolCallFragmentDoc = new TypedDocumentString(
   ... on AiConversationGetMicrosoftTeamsConversationHistoryToolCall {
     ...AiConversationGetMicrosoftTeamsConversationHistoryToolCall
   }
+  ... on AiConversationGetPullRequestCheckLogsToolCall {
+    ...AiConversationGetPullRequestCheckLogsToolCall
+  }
   ... on AiConversationGetPullRequestDiffToolCall {
     ...AiConversationGetPullRequestDiffToolCall
   }
@@ -84453,11 +85418,17 @@ export const AiConversationBaseToolCallFragmentDoc = new TypedDocumentString(
   ... on AiConversationRetrieveEntitiesToolCall {
     ...AiConversationRetrieveEntitiesToolCall
   }
+  ... on AiConversationRetryPullRequestCheckToolCall {
+    ...AiConversationRetryPullRequestCheckToolCall
+  }
   ... on AiConversationSearchDocumentationToolCall {
     ...AiConversationSearchDocumentationToolCall
   }
   ... on AiConversationSearchEntitiesToolCall {
     ...AiConversationSearchEntitiesToolCall
+  }
+  ... on AiConversationSubscribeToEventToolCall {
+    ...AiConversationSubscribeToEventToolCall
   }
   ... on AiConversationSuggestValuesToolCall {
     ...AiConversationSuggestValuesToolCall
@@ -84467,6 +85438,9 @@ export const AiConversationBaseToolCallFragmentDoc = new TypedDocumentString(
   }
   ... on AiConversationTranscribeVideoToolCall {
     ...AiConversationTranscribeVideoToolCall
+  }
+  ... on AiConversationUnsubscribeFromEventToolCall {
+    ...AiConversationUnsubscribeFromEventToolCall
   }
   ... on AiConversationUpdateEntityToolCall {
     ...AiConversationUpdateEntityToolCall
@@ -84534,6 +85508,26 @@ fragment AiConversationGetMicrosoftTeamsConversationHistoryToolCall on AiConvers
   displayInfo {
     ...AiConversationToolDisplayInfo
   }
+}
+fragment AiConversationGetPullRequestCheckLogsToolCall on AiConversationGetPullRequestCheckLogsToolCall {
+  __typename
+  rawArgs
+  args {
+    ...AiConversationGetPullRequestCheckLogsToolCallArgs
+  }
+  name
+  rawResult
+  displayInfo {
+    ...AiConversationToolDisplayInfo
+  }
+}
+fragment AiConversationGetPullRequestCheckLogsToolCallArgs on AiConversationGetPullRequestCheckLogsToolCallArgs {
+  __typename
+  checkName
+  entity {
+    ...AiConversationSearchEntitiesToolCallResultEntities
+  }
+  workflowName
 }
 fragment AiConversationGetPullRequestDiffToolCall on AiConversationGetPullRequestDiffToolCall {
   __typename
@@ -84649,13 +85643,18 @@ fragment AiConversationNavigateToPageToolCall on AiConversationNavigateToPageToo
 }
 fragment AiConversationNavigateToPageToolCallArgs on AiConversationNavigateToPageToolCallArgs {
   __typename
+  entities {
+    ...AiConversationNavigateToPageToolCallArgsEntities
+  }
+}
+fragment AiConversationNavigateToPageToolCallArgsEntities on AiConversationNavigateToPageToolCallArgsEntities {
+  __typename
   entityType
-  identifier
+  uuid
 }
 fragment AiConversationNavigateToPageToolCallResult on AiConversationNavigateToPageToolCallResult {
   __typename
-  newTab
-  url
+  urls
 }
 fragment AiConversationQueryActivityToolCall on AiConversationQueryActivityToolCall {
   __typename
@@ -84785,6 +85784,26 @@ fragment AiConversationRetrieveEntitiesToolCallArgs on AiConversationRetrieveEnt
     ...AiConversationSearchEntitiesToolCallResultEntities
   }
 }
+fragment AiConversationRetryPullRequestCheckToolCall on AiConversationRetryPullRequestCheckToolCall {
+  __typename
+  rawArgs
+  args {
+    ...AiConversationRetryPullRequestCheckToolCallArgs
+  }
+  name
+  rawResult
+  displayInfo {
+    ...AiConversationToolDisplayInfo
+  }
+}
+fragment AiConversationRetryPullRequestCheckToolCallArgs on AiConversationRetryPullRequestCheckToolCallArgs {
+  __typename
+  checkName
+  entity {
+    ...AiConversationSearchEntitiesToolCallResultEntities
+  }
+  workflowName
+}
 fragment AiConversationSearchDocumentationToolCall on AiConversationSearchDocumentationToolCall {
   __typename
   rawArgs
@@ -84823,6 +85842,26 @@ fragment AiConversationSearchEntitiesToolCallResult on AiConversationSearchEntit
 fragment AiConversationSearchEntitiesToolCallResultEntities on AiConversationSearchEntitiesToolCallResultEntities {
   __typename
   id
+  type
+}
+fragment AiConversationSubscribeToEventToolCall on AiConversationSubscribeToEventToolCall {
+  __typename
+  rawArgs
+  args {
+    ...AiConversationSubscribeToEventToolCallArgs
+  }
+  name
+  rawResult
+  displayInfo {
+    ...AiConversationToolDisplayInfo
+  }
+}
+fragment AiConversationSubscribeToEventToolCallArgs on AiConversationSubscribeToEventToolCallArgs {
+  __typename
+  endsAt
+  kind
+  message
+  subscriptionId
   type
 }
 fragment AiConversationSuggestValuesToolCall on AiConversationSuggestValuesToolCall {
@@ -84867,6 +85906,23 @@ fragment AiConversationTranscribeVideoToolCall on AiConversationTranscribeVideoT
   displayInfo {
     ...AiConversationToolDisplayInfo
   }
+}
+fragment AiConversationUnsubscribeFromEventToolCall on AiConversationUnsubscribeFromEventToolCall {
+  __typename
+  rawArgs
+  args {
+    ...AiConversationUnsubscribeFromEventToolCallArgs
+  }
+  name
+  rawResult
+  displayInfo {
+    ...AiConversationToolDisplayInfo
+  }
+}
+fragment AiConversationUnsubscribeFromEventToolCallArgs on AiConversationUnsubscribeFromEventToolCallArgs {
+  __typename
+  message
+  subscriptionId
 }
 fragment AiConversationUpdateEntityToolCall on AiConversationUpdateEntityToolCall {
   __typename
@@ -85932,6 +86988,7 @@ fragment ViewPreferencesValues on ViewPreferencesValues {
   issueSubGroupingLabelGroupId
   projectGroupingLabelGroupId
   projectSubGroupingLabelGroupId
+  groupOrderingMode
   projectGroupOrdering
   projectCustomerNeedsViewGrouping
   projectCustomerNeedsViewOrdering
@@ -86218,6 +87275,7 @@ fragment ViewPreferencesValues on ViewPreferencesValues {
   issueSubGroupingLabelGroupId
   projectGroupingLabelGroupId
   projectSubGroupingLabelGroupId
+  groupOrderingMode
   projectGroupOrdering
   projectCustomerNeedsViewGrouping
   projectCustomerNeedsViewOrdering
@@ -97415,6 +98473,7 @@ fragment ViewPreferencesValues on ViewPreferencesValues {
   issueSubGroupingLabelGroupId
   projectGroupingLabelGroupId
   projectSubGroupingLabelGroupId
+  groupOrderingMode
   projectGroupOrdering
   projectCustomerNeedsViewGrouping
   projectCustomerNeedsViewOrdering
@@ -98044,6 +99103,7 @@ fragment ViewPreferencesValues on ViewPreferencesValues {
   issueSubGroupingLabelGroupId
   projectGroupingLabelGroupId
   projectSubGroupingLabelGroupId
+  groupOrderingMode
   projectGroupOrdering
   projectCustomerNeedsViewGrouping
   projectCustomerNeedsViewOrdering
@@ -98290,6 +99350,7 @@ fragment ViewPreferencesValues on ViewPreferencesValues {
   issueSubGroupingLabelGroupId
   projectGroupingLabelGroupId
   projectSubGroupingLabelGroupId
+  groupOrderingMode
   projectGroupOrdering
   projectCustomerNeedsViewGrouping
   projectCustomerNeedsViewOrdering
@@ -98721,6 +99782,7 @@ fragment ViewPreferencesValues on ViewPreferencesValues {
   issueSubGroupingLabelGroupId
   projectGroupingLabelGroupId
   projectSubGroupingLabelGroupId
+  groupOrderingMode
   projectGroupOrdering
   projectCustomerNeedsViewGrouping
   projectCustomerNeedsViewOrdering
@@ -98967,6 +100029,7 @@ fragment ViewPreferencesValues on ViewPreferencesValues {
   issueSubGroupingLabelGroupId
   projectGroupingLabelGroupId
   projectSubGroupingLabelGroupId
+  groupOrderingMode
   projectGroupOrdering
   projectCustomerNeedsViewGrouping
   projectCustomerNeedsViewOrdering
@@ -99199,6 +100262,7 @@ fragment ViewPreferencesValues on ViewPreferencesValues {
   issueSubGroupingLabelGroupId
   projectGroupingLabelGroupId
   projectSubGroupingLabelGroupId
+  groupOrderingMode
   projectGroupOrdering
   projectCustomerNeedsViewGrouping
   projectCustomerNeedsViewOrdering
@@ -99488,6 +100552,7 @@ fragment ViewPreferencesValues on ViewPreferencesValues {
   issueSubGroupingLabelGroupId
   projectGroupingLabelGroupId
   projectSubGroupingLabelGroupId
+  groupOrderingMode
   projectGroupOrdering
   projectCustomerNeedsViewGrouping
   projectCustomerNeedsViewOrdering
@@ -127699,6 +128764,7 @@ fragment ViewPreferencesValues on ViewPreferencesValues {
   issueSubGroupingLabelGroupId
   projectGroupingLabelGroupId
   projectSubGroupingLabelGroupId
+  groupOrderingMode
   projectGroupOrdering
   projectCustomerNeedsViewGrouping
   projectCustomerNeedsViewOrdering
@@ -127958,6 +129024,7 @@ fragment ViewPreferencesValues on ViewPreferencesValues {
   issueSubGroupingLabelGroupId
   projectGroupingLabelGroupId
   projectSubGroupingLabelGroupId
+  groupOrderingMode
   projectGroupOrdering
   projectCustomerNeedsViewGrouping
   projectCustomerNeedsViewOrdering
