@@ -1418,7 +1418,11 @@ type AiConversation implements Node {
   """
   project: Project
   """
-  The time when the user marked the conversation as read. Null if the user hasn't read the conversation.
+  [Internal] The pull request this shared conversation is attached to. Null if the conversation is private.
+  """
+  pullRequest: PullRequest
+  """
+  The time when the current user marked the conversation as read. Null if the user hasn't read the conversation.
   """
   readAt: DateTime
   """
@@ -11414,9 +11418,13 @@ enum FacetPageSource {
 }
 
 """
-A user's bookmarked item that appears in their sidebar for quick access. Favorites can reference various entity types including issues, projects, cycles, views, documents, initiatives, labels, users, customers, dashboards, and pull requests. Favorites can be organized into folders and ordered by the user. Each favorite is owned by a single user and links to exactly one target entity (or is a folder containing other favorites).
+A user's bookmarked item that appears in their sidebar for quick access. Favorites can reference various entity types including issues, projects, cycles, views, documents, initiatives, labels, users, customers, dashboards, pull requests, and Agent conversations. Favorites can be organized into folders and ordered by the user. Each favorite is owned by a single user and links to exactly one target entity (or is a folder containing other favorites).
 """
 type Favorite implements Node {
+  """
+  [INTERNAL] The favorited Agent conversation.
+  """
+  aiConversation: AiConversation
   """
   The time at which the entity was archived. Null if the entity has not been archived.
   """
@@ -11611,6 +11619,10 @@ type FavoriteConnection {
 Input for creating a favorite. Exactly one target entity must be specified (e.g., issueId, projectId, customViewId, folderName, etc.).
 """
 input FavoriteCreateInput {
+  """
+  [INTERNAL] The identifier of the Agent conversation to favorite.
+  """
+  aiConversationId: String
   """
   The identifier of the custom view to favorite.
   """
@@ -12745,6 +12757,10 @@ type IdentityProvider implements Node {
   X.509 Signing Certificate in string form.
   """
   ssoSigningCert: String
+  """
+  The time at which the current SAML configuration was marked as verified. Null if it has not been verified. Cleared whenever the SAML configuration changes.
+  """
+  ssoVerifiedAt: DateTime
   """
   The type of identity provider.
   """
@@ -25313,6 +25329,15 @@ type Mutation {
     input: OrganizationUpdateInput!
   ): OrganizationPayload!
   """
+  [INTERNAL] Submits a Startup Program partner application from the website, creating a triage issue for the startup team.
+  """
+  partnerApplicationCreate(
+    """
+    The partner application to submit.
+    """
+    input: PartnerApplicationCreateInput!
+  ): ContactPayload!
+  """
   [INTERNAL] Finish passkey login process.
   """
   passkeyLoginFinish(
@@ -31091,6 +31116,80 @@ input PartialNotificationChannelPreferencesInput {
   slack: Boolean
 }
 
+"""
+[INTERNAL] Input for a Startup Program partner application submitted from the website.
+"""
+input PartnerApplicationCreateInput {
+  """
+  Number of cohorts run per year (accelerators and programs).
+  """
+  cohortsPerYear: String
+  """
+  Number of companies per cohort (accelerators and programs).
+  """
+  companiesPerCohort: String
+  """
+  Whether the applicant confirmed the distribution terms.
+  """
+  consent: Boolean!
+  """
+  One-line description of what the organization does.
+  """
+  description: String!
+  """
+  Channels the organization will use to distribute the offer.
+  """
+  distributionChannels: [String!]
+  """
+  Business email of the applicant.
+  """
+  email: String!
+  """
+  Full name of the applicant.
+  """
+  fullName: String!
+  """
+  Stages the firm primarily invests at (venture capital firms).
+  """
+  investmentStages: [String!]
+  """
+  Number of active members or startups in the network (communities).
+  """
+  networkSize: String
+  """
+  Whether the organization already offers software perks from other companies.
+  """
+  offersSoftwarePerks: String
+  """
+  Name of the partner organization.
+  """
+  organizationName: String!
+  """
+  Type of the partner organization (e.g., venture capital firm, accelerator).
+  """
+  organizationType: String!
+  """
+  Website of the partner organization.
+  """
+  organizationWebsite: String!
+  """
+  Which other software perks the organization offers, when applicable.
+  """
+  otherPerks: String
+  """
+  Number of active portfolio companies (venture capital firms).
+  """
+  portfolioCompanies: String
+  """
+  Primary countries or regions the organization operates in.
+  """
+  region: String!
+  """
+  The applicant's role or title at the organization.
+  """
+  role: String!
+}
+
 type PasskeyLoginStartResponse {
   """
   The passkey authentication options to pass to the WebAuthn API.
@@ -36128,6 +36227,10 @@ type PullRequest implements Node {
   """
   archivedAt: DateTime
   """
+  Whether auto-merge is enabled for the pull request.
+  """
+  autoMergeEnabled: Boolean!
+  """
   The Git SHA of the base commit on the target branch that the pull request is compared against. Null if not yet synced.
   """
   baseSha: String
@@ -36263,7 +36366,7 @@ enum PullRequestCheckPresentation {
 """
 type PullRequestCommit {
   """
-  Number of additions in this commit.
+  Number of additions in this commit. 0 when the hosting provider did not report per-commit diff stats.
   """
   additions: Float!
   """
@@ -36283,7 +36386,7 @@ type PullRequestCommit {
   """
   committedAt: String!
   """
-  Number of deletions in this commit.
+  Number of deletions in this commit. 0 when the hosting provider did not report per-commit diff stats.
   """
   deletions: Float!
   """
