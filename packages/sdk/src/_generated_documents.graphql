@@ -5757,6 +5757,10 @@ fragment AiConversationErrorPart on AiConversationErrorPart {
   retryResolution {
     ...AgentAutomationRetryResolution
   }
+  # The scope of the breached limit for usage-limit errors. Null for other error categories.
+  usageLimitScope
+  # The time when the breached usage limit resets, as an ISO 8601 string. Null when unknown or for other error categories.
+  usageLimitResetsAt
   # The type of the part.
   type
   # The user-facing error message for the failed AI response.
@@ -22908,6 +22912,8 @@ mutation integrationZendesk(
   $botUserRole: String
   # The Zendesk OAuth code.
   $code: String!
+  # [INTERNAL] Custom base URL for Zendesk API requests, such as a proxy in front of Zendesk. OAuth requests always use the standard subdomain URL.
+  $customApiUrl: String
   # The Zendesk OAuth redirect URI.
   $redirectUri: String!
   # The Zendesk OAuth scopes.
@@ -22918,6 +22924,7 @@ mutation integrationZendesk(
   integrationZendesk(
     botUserRole: $botUserRole
     code: $code
+    customApiUrl: $customApiUrl
     redirectUri: $redirectUri
     scope: $scope
     subdomain: $subdomain

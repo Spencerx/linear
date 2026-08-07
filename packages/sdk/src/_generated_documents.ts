@@ -457,6 +457,12 @@ export enum AgentAutomationRetryResolutionStatus {
   Scheduled = "scheduled",
 }
 
+/** The scope of the usage limit that blocked a loop run: the loop's own limit or the workspace-wide limit. */
+export enum AgentAutomationUsageLimitScope {
+  Loop = "loop",
+  Workspace = "workspace",
+}
+
 /** A session representing an AI coding agent's work on an issue or conversation. Agent sessions track the lifecycle of an agent's engagement, from creation through active work to completion or dismissal. Each session is associated with an agent user (the bot), optionally a human creator, an issue, and a comment thread where the agent posts updates. Sessions contain activities that record the agent's observable steps and can be linked to pull requests created during the work. */
 export type AgentSession = Node & {
   __typename?: "AgentSession";
@@ -1317,13 +1323,19 @@ export type AiConversationErrorPart = AiConversationBasePart & {
   retryResolution?: Maybe<AgentAutomationRetryResolution>;
   /** The type of the part. */
   type: AiConversationPartType;
+  /** The time when the breached usage limit resets, as an ISO 8601 string. Null when unknown or for other error categories. */
+  usageLimitResetsAt?: Maybe<Scalars["String"]>;
+  /** The scope of the breached limit for usage-limit errors. Null for other error categories. */
+  usageLimitScope?: Maybe<AgentAutomationUsageLimitScope>;
 };
 
 /** The category of an error part in an AI conversation. */
 export enum AiConversationErrorType {
   Billing = "billing",
+  FeatureDisabled = "featureDisabled",
   Unknown = "unknown",
   UntrustedSources = "untrustedSources",
+  UsageLimit = "usageLimit",
 }
 
 /** An event part in an AI conversation. */
@@ -6733,6 +6745,18 @@ export type EntityExternalLinkUpdateInput = {
   url?: InputMaybe<Scalars["String"]>;
 };
 
+/** Comparator for project and initiative identifiers. Accepts UUIDs and human-readable identifiers (e.g. "PROJ-123"). */
+export type EntityIdentifierIdComparator = {
+  /** Equals constraint. */
+  eq?: InputMaybe<Scalars["ID"]>;
+  /** In-array constraint. */
+  in?: InputMaybe<Array<Scalars["ID"]>>;
+  /** Not-equals constraint. */
+  neq?: InputMaybe<Scalars["ID"]>;
+  /** Not-in-array constraint. */
+  nin?: InputMaybe<Array<Scalars["ID"]>>;
+};
+
 /** Payload for entity-related webhook events. */
 export type EntityWebhookPayload = {
   __typename?: "EntityWebhookPayload";
@@ -8033,6 +8057,8 @@ export type InitiativeCollectionFilter = {
   createdAt?: InputMaybe<DateComparator>;
   /** Filters that the initiative creator must satisfy. */
   creator?: InputMaybe<NullableUserFilter>;
+  /** [Internal] Comparator for the initiative's custom identifier. */
+  customIdentifier?: InputMaybe<NullableStringComparator>;
   /** Filters that needs to be matched by all initiatives. */
   every?: InputMaybe<InitiativeFilter>;
   /** Comparator for the initiative health: onTrack, atRisk, offTrack */
@@ -8040,7 +8066,7 @@ export type InitiativeCollectionFilter = {
   /** Comparator for the initiative health (with age): onTrack, atRisk, offTrack, outdated, noUpdate */
   healthWithAge?: InputMaybe<StringComparator>;
   /** Comparator for the identifier. */
-  id?: InputMaybe<IdComparator>;
+  id?: InputMaybe<EntityIdentifierIdComparator>;
   /** Filters that the initiative updates must satisfy. */
   initiativeUpdates?: InputMaybe<InitiativeUpdatesCollectionFilter>;
   /** Filters that the initiative labels must satisfy. */
@@ -8145,12 +8171,14 @@ export type InitiativeFilter = {
   createdAt?: InputMaybe<DateComparator>;
   /** Filters that the initiative creator must satisfy. */
   creator?: InputMaybe<NullableUserFilter>;
+  /** [Internal] Comparator for the initiative's custom identifier. */
+  customIdentifier?: InputMaybe<NullableStringComparator>;
   /** Comparator for the initiative health: onTrack, atRisk, offTrack */
   health?: InputMaybe<StringComparator>;
   /** Comparator for the initiative health (with age): onTrack, atRisk, offTrack, outdated, noUpdate */
   healthWithAge?: InputMaybe<StringComparator>;
   /** Comparator for the identifier. */
-  id?: InputMaybe<IdComparator>;
+  id?: InputMaybe<EntityIdentifierIdComparator>;
   /** Filters that the initiative updates must satisfy. */
   initiativeUpdates?: InputMaybe<InitiativeUpdatesCollectionFilter>;
   /** Filters that the initiative labels must satisfy. */
@@ -14450,6 +14478,7 @@ export type MutationIntegrationUpdateArgs = {
 export type MutationIntegrationZendeskArgs = {
   botUserRole?: InputMaybe<Scalars["String"]>;
   code: Scalars["String"];
+  customApiUrl?: InputMaybe<Scalars["String"]>;
   redirectUri: Scalars["String"];
   scope: Scalars["String"];
   subdomain: Scalars["String"];
@@ -16066,12 +16095,14 @@ export type NullableInitiativeFilter = {
   createdAt?: InputMaybe<DateComparator>;
   /** Filters that the initiative creator must satisfy. */
   creator?: InputMaybe<NullableUserFilter>;
+  /** [Internal] Comparator for the initiative's custom identifier. */
+  customIdentifier?: InputMaybe<NullableStringComparator>;
   /** Comparator for the initiative health: onTrack, atRisk, offTrack */
   health?: InputMaybe<StringComparator>;
   /** Comparator for the initiative health (with age): onTrack, atRisk, offTrack, outdated, noUpdate */
   healthWithAge?: InputMaybe<StringComparator>;
   /** Comparator for the identifier. */
-  id?: InputMaybe<IdComparator>;
+  id?: InputMaybe<EntityIdentifierIdComparator>;
   /** Filters that the initiative updates must satisfy. */
   initiativeUpdates?: InputMaybe<InitiativeUpdatesCollectionFilter>;
   /** Filters that the initiative labels must satisfy. */
@@ -16310,6 +16341,8 @@ export type NullableProjectFilter = {
   createdAt?: InputMaybe<DateComparator>;
   /** Filters that the projects creator must satisfy. */
   creator?: InputMaybe<UserFilter>;
+  /** [Internal] Comparator for the project's custom identifier. */
+  customIdentifier?: InputMaybe<NullableStringComparator>;
   /** Count of customers */
   customerCount?: InputMaybe<NumberComparator>;
   /** Count of important customers */
@@ -16331,7 +16364,7 @@ export type NullableProjectFilter = {
   /** Comparator for the project health (with age): onTrack, atRisk, offTrack, outdated, noUpdate */
   healthWithAge?: InputMaybe<StringComparator>;
   /** Comparator for the identifier. */
-  id?: InputMaybe<IdComparator>;
+  id?: InputMaybe<EntityIdentifierIdComparator>;
   /** Filters that the projects initiatives must satisfy. */
   initiatives?: InputMaybe<InitiativeCollectionFilter>;
   /** Filters that the projects issues must satisfy. */
@@ -18711,6 +18744,8 @@ export type ProjectCollectionFilter = {
   createdAt?: InputMaybe<DateComparator>;
   /** Filters that the projects creator must satisfy. */
   creator?: InputMaybe<UserFilter>;
+  /** [Internal] Comparator for the project's custom identifier. */
+  customIdentifier?: InputMaybe<NullableStringComparator>;
   /** Count of customers */
   customerCount?: InputMaybe<NumberComparator>;
   /** Count of important customers */
@@ -18734,7 +18769,7 @@ export type ProjectCollectionFilter = {
   /** Comparator for the project health (with age): onTrack, atRisk, offTrack, outdated, noUpdate */
   healthWithAge?: InputMaybe<StringComparator>;
   /** Comparator for the identifier. */
-  id?: InputMaybe<IdComparator>;
+  id?: InputMaybe<EntityIdentifierIdComparator>;
   /** Filters that the projects initiatives must satisfy. */
   initiatives?: InputMaybe<InitiativeCollectionFilter>;
   /** Filters that the projects issues must satisfy. */
@@ -18877,6 +18912,8 @@ export type ProjectFilter = {
   createdAt?: InputMaybe<DateComparator>;
   /** Filters that the projects creator must satisfy. */
   creator?: InputMaybe<UserFilter>;
+  /** [Internal] Comparator for the project's custom identifier. */
+  customIdentifier?: InputMaybe<NullableStringComparator>;
   /** Count of customers */
   customerCount?: InputMaybe<NumberComparator>;
   /** Count of important customers */
@@ -18898,7 +18935,7 @@ export type ProjectFilter = {
   /** Comparator for the project health (with age): onTrack, atRisk, offTrack, outdated, noUpdate */
   healthWithAge?: InputMaybe<StringComparator>;
   /** Comparator for the identifier. */
-  id?: InputMaybe<IdComparator>;
+  id?: InputMaybe<EntityIdentifierIdComparator>;
   /** Filters that the projects initiatives must satisfy. */
   initiatives?: InputMaybe<InitiativeCollectionFilter>;
   /** Filters that the projects issues must satisfy. */
@@ -27853,6 +27890,8 @@ export type WorkflowDefinitionNotification = Entity &
     actorAvatarUrl?: Maybe<Scalars["String"]>;
     /** [Internal] Notification actor initials if avatar is not available. */
     actorInitials?: Maybe<Scalars["String"]>;
+    /** [Internal] The AI conversation identifier for the related loop run, if one was created. */
+    aiConversationId?: Maybe<Scalars["String"]>;
     /** The time at which the entity was archived. Null if the entity has not been archived. */
     archivedAt?: Maybe<Scalars["DateTime"]>;
     /** The bot that caused the notification. */
@@ -28108,6 +28147,8 @@ export type ZendeskSettingsInput = {
   botUserId?: InputMaybe<Scalars["String"]>;
   /** [INTERNAL] Temporary flag indicating if the integration has the necessary scopes for Customers */
   canReadCustomers?: InputMaybe<Scalars["Boolean"]>;
+  /** [INTERNAL] Custom base URL for Zendesk API requests, such as a proxy in front of Zendesk. When unset, API requests use the standard subdomain URL. OAuth requests always use the standard subdomain URL. */
+  customApiUrl?: InputMaybe<Scalars["String"]>;
   /** [ALPHA] Whether customer and customer requests should not be automatically created when conversations are linked to a Linear issue. */
   disableCustomerRequestsAutoCreation?: InputMaybe<Scalars["Boolean"]>;
   /** Whether Linear Agent should be enabled for this integration. */
@@ -28124,7 +28165,7 @@ export type ZendeskSettingsInput = {
   subdomain: Scalars["String"];
   /** [INTERNAL] Flag indicating if the integration supports OAuth refresh tokens */
   supportsOAuthRefresh?: InputMaybe<Scalars["Boolean"]>;
-  /** The URL of the connected Zendesk organization. */
+  /** The URL of the connected Zendesk organization, used to link into Zendesk. API requests use `customApiUrl` when it is set. */
   url: Scalars["String"];
 };
 
@@ -28192,7 +28233,7 @@ type AiConversationBasePart_AiConversationElicitationPart_Fragment = {
 
 type AiConversationBasePart_AiConversationErrorPart_Fragment = { __typename: "AiConversationErrorPart" } & Pick<
   AiConversationErrorPart,
-  "id" | "type" | "errorType" | "message"
+  "id" | "type" | "errorType" | "usageLimitScope" | "usageLimitResetsAt" | "message"
 > & {
     metadata: { __typename: "AiConversationPartMetadata" } & Pick<
       AiConversationPartMetadata,
@@ -35533,7 +35574,7 @@ export type IssueSuggestionReasonReferenceFragment = { __typename: "IssueSuggest
 
 export type AiConversationErrorPartFragment = { __typename: "AiConversationErrorPart" } & Pick<
   AiConversationErrorPart,
-  "id" | "errorType" | "type" | "message"
+  "id" | "errorType" | "usageLimitScope" | "usageLimitResetsAt" | "type" | "message"
 > & {
     metadata: { __typename: "AiConversationPartMetadata" } & Pick<
       AiConversationPartMetadata,
@@ -75359,6 +75400,7 @@ export type DeleteIntegrationTemplateMutation = { __typename?: "Mutation" } & {
 export type IntegrationZendeskMutationVariables = Exact<{
   botUserRole?: InputMaybe<Scalars["String"]>;
   code: Scalars["String"];
+  customApiUrl?: InputMaybe<Scalars["String"]>;
   redirectUri: Scalars["String"];
   scope: Scalars["String"];
   subdomain: Scalars["String"];
@@ -83323,6 +83365,8 @@ export const AiConversationErrorPartFragmentDoc = new TypedDocumentString(
   retryResolution {
     ...AgentAutomationRetryResolution
   }
+  usageLimitScope
+  usageLimitResetsAt
   type
   message
 }
@@ -86658,6 +86702,8 @@ fragment AiConversationErrorPart on AiConversationErrorPart {
   retryResolution {
     ...AgentAutomationRetryResolution
   }
+  usageLimitScope
+  usageLimitResetsAt
   type
   message
 }
@@ -142661,10 +142707,11 @@ export const DeleteIntegrationTemplateDocument = new TypedDocumentString(`
   success
 }`) as unknown as TypedDocumentString<DeleteIntegrationTemplateMutation, DeleteIntegrationTemplateMutationVariables>;
 export const IntegrationZendeskDocument = new TypedDocumentString(`
-    mutation integrationZendesk($botUserRole: String, $code: String!, $redirectUri: String!, $scope: String!, $subdomain: String!) {
+    mutation integrationZendesk($botUserRole: String, $code: String!, $customApiUrl: String, $redirectUri: String!, $scope: String!, $subdomain: String!) {
   integrationZendesk(
     botUserRole: $botUserRole
     code: $code
+    customApiUrl: $customApiUrl
     redirectUri: $redirectUri
     scope: $scope
     subdomain: $subdomain

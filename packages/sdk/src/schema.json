@@ -2358,6 +2358,29 @@
         "possibleTypes": null
       },
       {
+        "kind": "ENUM",
+        "name": "AgentAutomationUsageLimitScope",
+        "description": "The scope of the usage limit that blocked a loop run: the loop's own limit or the workspace-wide limit.",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "loop",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "workspace",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "possibleTypes": null
+      },
+      {
         "kind": "OBJECT",
         "name": "AgentSession",
         "description": "A session representing an AI coding agent's work on an issue or conversation. Agent sessions track the lifecycle of an agent's engagement, from creation through active work to completion or dismissal. Each session is associated with an agent user (the bot), optionally a human creator, an issue, and a comment thread where the agent posts updates. Sessions contain activities that record the agent's observable steps and can be linked to pull requests created during the work.",
@@ -7740,6 +7763,30 @@
             },
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "usageLimitResetsAt",
+            "description": "The time when the breached usage limit resets, as an ISO 8601 string. Null when unknown or for other error categories.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "usageLimitScope",
+            "description": "The scope of the breached limit for usage-limit errors. Null for other error categories.",
+            "args": [],
+            "type": {
+              "kind": "ENUM",
+              "name": "AgentAutomationUsageLimitScope",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "inputFields": null,
@@ -7768,6 +7815,12 @@
             "deprecationReason": null
           },
           {
+            "name": "featureDisabled",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "unknown",
             "description": null,
             "isDeprecated": false,
@@ -7775,6 +7828,12 @@
           },
           {
             "name": "untrustedSources",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "usageLimit",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -41193,6 +41252,81 @@
         "possibleTypes": null
       },
       {
+        "kind": "INPUT_OBJECT",
+        "name": "EntityIdentifierIDComparator",
+        "description": "Comparator for project and initiative identifiers. Accepts UUIDs and human-readable identifiers (e.g. \"PROJ-123\").",
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "eq",
+            "description": "Equals constraint.",
+            "type": {
+              "kind": "SCALAR",
+              "name": "ID",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "in",
+            "description": "In-array constraint.",
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "neq",
+            "description": "Not-equals constraint.",
+            "type": {
+              "kind": "SCALAR",
+              "name": "ID",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "nin",
+            "description": "Not-in-array constraint.",
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
         "kind": "OBJECT",
         "name": "EntityWebhookPayload",
         "description": "Payload for entity-related webhook events.",
@@ -49079,6 +49213,18 @@
             "deprecationReason": null
           },
           {
+            "name": "customIdentifier",
+            "description": "[Internal] Comparator for the initiative's custom identifier.",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NullableStringComparator",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "every",
             "description": "Filters that needs to be matched by all initiatives.",
             "type": {
@@ -49119,7 +49265,7 @@
             "description": "Comparator for the identifier.",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "IDComparator",
+              "name": "EntityIdentifierIDComparator",
               "ofType": null
             },
             "defaultValue": null,
@@ -49774,6 +49920,18 @@
             "deprecationReason": null
           },
           {
+            "name": "customIdentifier",
+            "description": "[Internal] Comparator for the initiative's custom identifier.",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NullableStringComparator",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "health",
             "description": "Comparator for the initiative health: onTrack, atRisk, offTrack",
             "type": {
@@ -49802,7 +49960,7 @@
             "description": "Comparator for the identifier.",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "IDComparator",
+              "name": "EntityIdentifierIDComparator",
               "ofType": null
             },
             "defaultValue": null,
@@ -87553,6 +87711,18 @@
                 "deprecationReason": null
               },
               {
+                "name": "customApiUrl",
+                "description": "[INTERNAL] Custom base URL for Zendesk API requests, such as a proxy in front of Zendesk. OAuth requests always use the standard subdomain URL.",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
                 "name": "redirectUri",
                 "description": "The Zendesk OAuth redirect URI.",
                 "type": {
@@ -100731,6 +100901,18 @@
             "deprecationReason": null
           },
           {
+            "name": "customIdentifier",
+            "description": "[Internal] Comparator for the initiative's custom identifier.",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NullableStringComparator",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "health",
             "description": "Comparator for the initiative health: onTrack, atRisk, offTrack",
             "type": {
@@ -100759,7 +100941,7 @@
             "description": "Comparator for the identifier.",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "IDComparator",
+              "name": "EntityIdentifierIDComparator",
               "ofType": null
             },
             "defaultValue": null,
@@ -102207,6 +102389,18 @@
             "deprecationReason": null
           },
           {
+            "name": "customIdentifier",
+            "description": "[Internal] Comparator for the project's custom identifier.",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NullableStringComparator",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "customerCount",
             "description": "Count of customers",
             "type": {
@@ -102331,7 +102525,7 @@
             "description": "Comparator for the identifier.",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "IDComparator",
+              "name": "EntityIdentifierIDComparator",
               "ofType": null
             },
             "defaultValue": null,
@@ -117085,6 +117279,18 @@
             "deprecationReason": null
           },
           {
+            "name": "customIdentifier",
+            "description": "[Internal] Comparator for the project's custom identifier.",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NullableStringComparator",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "customerCount",
             "description": "Count of customers",
             "type": {
@@ -117221,7 +117427,7 @@
             "description": "Comparator for the identifier.",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "IDComparator",
+              "name": "EntityIdentifierIDComparator",
               "ofType": null
             },
             "defaultValue": null,
@@ -118124,6 +118330,18 @@
             "deprecationReason": null
           },
           {
+            "name": "customIdentifier",
+            "description": "[Internal] Comparator for the project's custom identifier.",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "NullableStringComparator",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "customerCount",
             "description": "Count of customers",
             "type": {
@@ -118248,7 +118466,7 @@
             "description": "Comparator for the identifier.",
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "IDComparator",
+              "name": "EntityIdentifierIDComparator",
               "ofType": null
             },
             "defaultValue": null,
@@ -174958,6 +175176,18 @@
             "deprecationReason": null
           },
           {
+            "name": "aiConversationId",
+            "description": "[Internal] The AI conversation identifier for the related loop run, if one was created.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "archivedAt",
             "description": "The time at which the entity was archived. Null if the entity has not been archived.",
             "args": [],
@@ -176542,6 +176772,18 @@
             "deprecationReason": null
           },
           {
+            "name": "customApiUrl",
+            "description": "[INTERNAL] Custom base URL for Zendesk API requests, such as a proxy in front of Zendesk. When unset, API requests use the standard subdomain URL. OAuth requests always use the standard subdomain URL.",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "disableCustomerRequestsAutoCreation",
             "description": "[ALPHA] Whether customer and customer requests should not be automatically created when conversations are linked to a Linear issue.",
             "type": {
@@ -176651,7 +176893,7 @@
           },
           {
             "name": "url",
-            "description": "The URL of the connected Zendesk organization.",
+            "description": "The URL of the connected Zendesk organization, used to link into Zendesk. API requests use `customApiUrl` when it is set.",
             "type": {
               "kind": "NON_NULL",
               "name": null,

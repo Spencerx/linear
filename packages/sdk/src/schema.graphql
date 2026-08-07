@@ -703,6 +703,14 @@ enum AgentAutomationRetryResolutionStatus {
 }
 
 """
+The scope of the usage limit that blocked a loop run: the loop's own limit or the workspace-wide limit.
+"""
+enum AgentAutomationUsageLimitScope {
+  loop
+  workspace
+}
+
+"""
 A session representing an AI coding agent's work on an issue or conversation. Agent sessions track the lifecycle of an agent's engagement, from creation through active work to completion or dismissal. Each session is associated with an agent user (the bot), optionally a human creator, an issue, and a comment thread where the agent posts updates. Sessions contain activities that record the agent's observable steps and can be linked to pull requests created during the work.
 """
 type AgentSession implements Node {
@@ -2073,6 +2081,14 @@ type AiConversationErrorPart implements AiConversationBasePart {
   The type of the part.
   """
   type: AiConversationPartType!
+  """
+  The time when the breached usage limit resets, as an ISO 8601 string. Null when unknown or for other error categories.
+  """
+  usageLimitResetsAt: String
+  """
+  The scope of the breached limit for usage-limit errors. Null for other error categories.
+  """
+  usageLimitScope: AgentAutomationUsageLimitScope
 }
 
 """
@@ -2080,8 +2096,10 @@ The category of an error part in an AI conversation.
 """
 enum AiConversationErrorType {
   billing
+  featureDisabled
   unknown
   untrustedSources
+  usageLimit
 }
 
 """
@@ -11282,6 +11300,28 @@ input EntityExternalLinkUpdateInput {
 }
 
 """
+Comparator for project and initiative identifiers. Accepts UUIDs and human-readable identifiers (e.g. "PROJ-123").
+"""
+input EntityIdentifierIDComparator {
+  """
+  Equals constraint.
+  """
+  eq: ID
+  """
+  In-array constraint.
+  """
+  in: [ID!]
+  """
+  Not-equals constraint.
+  """
+  neq: ID
+  """
+  Not-in-array constraint.
+  """
+  nin: [ID!]
+}
+
+"""
 Payload for entity-related webhook events.
 """
 type EntityWebhookPayload {
@@ -13584,6 +13624,10 @@ input InitiativeCollectionFilter {
   """
   creator: NullableUserFilter
   """
+  [Internal] Comparator for the initiative's custom identifier.
+  """
+  customIdentifier: NullableStringComparator
+  """
   Filters that needs to be matched by all initiatives.
   """
   every: InitiativeFilter
@@ -13598,7 +13642,7 @@ input InitiativeCollectionFilter {
   """
   Comparator for the identifier.
   """
-  id: IDComparator
+  id: EntityIdentifierIDComparator
   """
   Filters that the initiative updates must satisfy.
   """
@@ -13788,6 +13832,10 @@ input InitiativeFilter {
   """
   creator: NullableUserFilter
   """
+  [Internal] Comparator for the initiative's custom identifier.
+  """
+  customIdentifier: NullableStringComparator
+  """
   Comparator for the initiative health: onTrack, atRisk, offTrack
   """
   health: StringComparator
@@ -13798,7 +13846,7 @@ input InitiativeFilter {
   """
   Comparator for the identifier.
   """
-  id: IDComparator
+  id: EntityIdentifierIDComparator
   """
   Filters that the initiative updates must satisfy.
   """
@@ -24695,6 +24743,10 @@ type Mutation {
     """
     code: String!
     """
+    [INTERNAL] Custom base URL for Zendesk API requests, such as a proxy in front of Zendesk. OAuth requests always use the standard subdomain URL.
+    """
+    customApiUrl: String
+    """
     The Zendesk OAuth redirect URI.
     """
     redirectUri: String!
@@ -28185,6 +28237,10 @@ input NullableInitiativeFilter {
   """
   creator: NullableUserFilter
   """
+  [Internal] Comparator for the initiative's custom identifier.
+  """
+  customIdentifier: NullableStringComparator
+  """
   Comparator for the initiative health: onTrack, atRisk, offTrack
   """
   health: StringComparator
@@ -28195,7 +28251,7 @@ input NullableInitiativeFilter {
   """
   Comparator for the identifier.
   """
-  id: IDComparator
+  id: EntityIdentifierIDComparator
   """
   Filters that the initiative updates must satisfy.
   """
@@ -28665,6 +28721,10 @@ input NullableProjectFilter {
   """
   creator: UserFilter
   """
+  [Internal] Comparator for the project's custom identifier.
+  """
+  customIdentifier: NullableStringComparator
+  """
   Count of customers
   """
   customerCount: NumberComparator
@@ -28707,7 +28767,7 @@ input NullableProjectFilter {
   """
   Comparator for the identifier.
   """
-  id: IDComparator
+  id: EntityIdentifierIDComparator
   """
   Filters that the projects initiatives must satisfy.
   """
@@ -33015,6 +33075,10 @@ input ProjectCollectionFilter {
   """
   creator: UserFilter
   """
+  [Internal] Comparator for the project's custom identifier.
+  """
+  customIdentifier: NullableStringComparator
+  """
   Count of customers
   """
   customerCount: NumberComparator
@@ -33061,7 +33125,7 @@ input ProjectCollectionFilter {
   """
   Comparator for the identifier.
   """
-  id: IDComparator
+  id: EntityIdentifierIDComparator
   """
   Filters that the projects initiatives must satisfy.
   """
@@ -33327,6 +33391,10 @@ input ProjectFilter {
   """
   creator: UserFilter
   """
+  [Internal] Comparator for the project's custom identifier.
+  """
+  customIdentifier: NullableStringComparator
+  """
   Count of customers
   """
   customerCount: NumberComparator
@@ -33369,7 +33437,7 @@ input ProjectFilter {
   """
   Comparator for the identifier.
   """
-  id: IDComparator
+  id: EntityIdentifierIDComparator
   """
   Filters that the projects initiatives must satisfy.
   """
@@ -49906,6 +49974,10 @@ type WorkflowDefinitionNotification implements Entity & Node & Notification {
   """
   actorInitials: String
   """
+  [Internal] The AI conversation identifier for the related loop run, if one was created.
+  """
+  aiConversationId: String
+  """
   The time at which the entity was archived. Null if the entity has not been archived.
   """
   archivedAt: DateTime
@@ -50345,6 +50417,10 @@ input ZendeskSettingsInput {
   """
   canReadCustomers: Boolean
   """
+  [INTERNAL] Custom base URL for Zendesk API requests, such as a proxy in front of Zendesk. When unset, API requests use the standard subdomain URL. OAuth requests always use the standard subdomain URL.
+  """
+  customApiUrl: String
+  """
   [ALPHA] Whether customer and customer requests should not be automatically created when conversations are linked to a Linear issue.
   """
   disableCustomerRequestsAutoCreation: Boolean
@@ -50377,7 +50453,7 @@ input ZendeskSettingsInput {
   """
   supportsOAuthRefresh: Boolean
   """
-  The URL of the connected Zendesk organization.
+  The URL of the connected Zendesk organization, used to link into Zendesk. API requests use `customApiUrl` when it is set.
   """
   url: String!
 }

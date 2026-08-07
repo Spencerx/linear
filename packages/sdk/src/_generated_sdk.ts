@@ -1638,18 +1638,22 @@ export class AiConversationErrorPart extends Request {
     super(request);
     this.id = data.id;
     this.message = data.message;
+    this.usageLimitResetsAt = data.usageLimitResetsAt ?? undefined;
     this.metadata = new AiConversationPartMetadata(request, data.metadata);
     this.retryResolution = data.retryResolution
       ? new AgentAutomationRetryResolution(request, data.retryResolution)
       : undefined;
     this.errorType = data.errorType ?? undefined;
     this.type = data.type;
+    this.usageLimitScope = data.usageLimitScope ?? undefined;
   }
 
   /** The ID of the part. */
   public id: string;
   /** The user-facing error message for the failed AI response. */
   public message: string;
+  /** The time when the breached usage limit resets, as an ISO 8601 string. Null when unknown or for other error categories. */
+  public usageLimitResetsAt?: string | null;
   /** The metadata of the part. */
   public metadata: AiConversationPartMetadata;
   /** The outcome of retrying this error's loop run. Null when the run has not been reconsidered. */
@@ -1658,6 +1662,8 @@ export class AiConversationErrorPart extends Request {
   public errorType?: L.AiConversationErrorType | null;
   /** The type of the part. */
   public type: L.AiConversationPartType;
+  /** The scope of the breached limit for usage-limit errors. Null for other error categories. */
+  public usageLimitScope?: L.AgentAutomationUsageLimitScope | null;
 }
 /**
  * An event part in an AI conversation.
@@ -53400,6 +53406,7 @@ export {
   AgentActivitySignal,
   AgentActivityType,
   AgentAutomationRetryResolutionStatus,
+  AgentAutomationUsageLimitScope,
   AgentSessionStatus,
   AgentSessionType,
   AiConversationAckKind,
